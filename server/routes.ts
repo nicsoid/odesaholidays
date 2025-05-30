@@ -2,9 +2,10 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
-// import { mongoStorage } from "./mongodb-storage";
-// import { authenticateToken, optionalAuth } from "./auth-middleware";
+import { mongoStorage } from "./mongodb-storage";
+import { authenticateToken, optionalAuth } from "./auth-middleware";
 import { insertUserSchema, insertPostcardSchema, insertOrderSchema, insertAnalyticsSchema, insertNewsletterSubscriberSchema } from "@shared/schema";
+import { loginSchema, registerSchema } from "../shared/mongodb-schema";
 import { z } from "zod";
 
 // Initialize Stripe only if keys are available
@@ -15,11 +16,105 @@ if (process.env.STRIPE_SECRET_KEY) {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
+  // Authentication routes
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const userData = registerSchema.parse(req.body);
+      const { user, token } = await mongoStorage.registerUser(userData);
+      res.status(201).json({ user: { ...user, passwordHash: undefined }, token });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const credentials = loginSchema.parse(req.body);
+      const { user, token } = await mongoStorage.loginUser(credentials);
+      res.json({ user: { ...user, passwordHash: undefined }, token });
+    } catch (error: any) {
+      res.status(401).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/auth/me", authenticateToken, async (req: any, res) => {
+    res.json({ user: { ...req.user, passwordHash: undefined } });
+  });
+
+  // Events routes
+  app.get("/api/events", async (req, res) => {
+    try {
+      const { category, locationId } = req.query;
+      const filters: any = {};
+      if (category) filters.category = category as string;
+      if (locationId) filters.locationId = locationId as string;
+      
+      const events = await mongoStorage.getEvents(filters);
+      res.json(events);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/events/upcoming", async (req, res) => {
+    try {
+      const { limit } = req.query;
+      const events = await mongoStorage.getUpcomingEvents(limit ? parseInt(limit as string) : 10);
+      res.json(events);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/events", authenticateToken, async (req: any, res) => {
+    try {
+      const eventData = { ...req.body, createdBy: req.user._id };
+      const event = await mongoStorage.createEvent(eventData);
+      res.status(201).json(event);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Locations routes
+  app.get("/api/locations", async (req, res) => {
+    try {
+      const { category } = req.query;
+      const filters: any = {};
+      if (category) filters.category = category as string;
+      
+      const locations = await mongoStorage.getLocations(filters);
+      res.json(locations);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/locations/popular", async (req, res) => {
+    try {
+      const { limit } = req.query;
+      const locations = await mongoStorage.getPopularLocations(limit ? parseInt(limit as string) : 10);
+      res.json(locations);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/locations", authenticateToken, async (req: any, res) => {
+    try {
+      const locationData = { ...req.body, createdBy: req.user._id };
+      const location = await mongoStorage.createLocation(locationData);
+      res.status(201).json(location);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Templates
   app.get("/api/templates", async (req, res) => {
     try {
       const { category } = req.query;
-      const templates = await mongoStorage.getTemplates(category as string);
+      const templates = await storage.getTemplates(category as string);
       res.json(templates);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
@@ -28,7 +123,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/templates/:id", async (req, res) => {
     try {
-      const template = await mongoStorage.getTemplate(req.params.id);
+      const template = await storage.getTemplate(req.params.id);
       if (!template) {
         return res.status(404).json({ message: "Template not found" });
       }

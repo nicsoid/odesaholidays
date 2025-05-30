@@ -48,8 +48,7 @@ app.use((req, res, next) => {
     mongoStorage.initialize();
     log("Storage initialized successfully");
   } catch (error) {
-    log("Failed to connect to database: " + error);
-    process.exit(1);
+    log("MongoDB connection failed, continuing with memory storage: " + error);
   }
 
   const server = await registerRoutes(app);
