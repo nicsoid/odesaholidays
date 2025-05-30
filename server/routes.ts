@@ -5,13 +5,11 @@ import { storage } from "./storage";
 import { insertUserSchema, insertPostcardSchema, insertOrderSchema, insertAnalyticsSchema, insertNewsletterSubscriberSchema } from "@shared/schema";
 import { z } from "zod";
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+// Initialize Stripe only if keys are available
+let stripe: Stripe | null = null;
+if (process.env.STRIPE_SECRET_KEY) {
+  stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 }
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
-});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -167,6 +165,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Stripe payment route for one-time payments (physical postcards)
   app.post("/api/create-payment-intent", async (req, res) => {
+    if (!stripe) {
+      return res.status(503).json({ 
+        message: "Payment processing is currently unavailable. Please contact support.",
+        error: "STRIPE_NOT_CONFIGURED"
+      });
+    }
+
     try {
       const { amount, orderId } = req.body;
       const paymentIntent = await stripe.paymentIntents.create({

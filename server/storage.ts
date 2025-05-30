@@ -165,6 +165,7 @@ export class MemStorage implements IStorage {
     const user: User = {
       ...insertUser,
       id,
+      username: insertUser.username || null,
       stripeCustomerId: null,
       referralCode: `REF${id.toString().padStart(6, '0')}`,
       referredBy: null,
@@ -213,6 +214,12 @@ export class MemStorage implements IStorage {
     const postcard: Postcard = {
       ...insertPostcard,
       id,
+      userId: insertPostcard.userId || null,
+      customImageUrl: insertPostcard.customImageUrl || null,
+      fontFamily: insertPostcard.fontFamily || null,
+      backgroundColor: insertPostcard.backgroundColor || null,
+      textColor: insertPostcard.textColor || null,
+      isPublic: insertPostcard.isPublic || null,
       downloadCount: 0,
       shareCount: 0,
       createdAt: new Date(),
@@ -247,6 +254,8 @@ export class MemStorage implements IStorage {
     const order: Order = {
       ...insertOrder,
       id,
+      userId: insertOrder.userId || null,
+      postcardId: insertOrder.postcardId || null,
       stripePaymentIntentId: null,
       status: "pending",
       createdAt: new Date(),
@@ -284,6 +293,8 @@ export class MemStorage implements IStorage {
   async createTemplate(insertTemplate: InsertTemplate): Promise<Template> {
     const template: Template = {
       ...insertTemplate,
+      description: insertTemplate.description || null,
+      isPremium: insertTemplate.isPremium || null,
       usageCount: 0,
       createdAt: new Date(),
     };
@@ -308,6 +319,9 @@ export class MemStorage implements IStorage {
     const analytics: Analytics = {
       ...insertAnalytics,
       id,
+      userId: insertAnalytics.userId || null,
+      postcardId: insertAnalytics.postcardId || null,
+      platform: insertAnalytics.platform || null,
       createdAt: new Date(),
     };
     this.analytics.set(id, analytics);
@@ -330,6 +344,7 @@ export class MemStorage implements IStorage {
     const subscriber: NewsletterSubscriber = {
       ...insertSubscriber,
       id,
+      source: insertSubscriber.source || null,
       isActive: true,
       createdAt: new Date(),
     };
