@@ -311,11 +311,11 @@ export class MongoStorage implements IMongoStorage {
       { returnDocument: 'after' }
     );
 
-    if (!result.value) {
+    if (!result) {
       throw new Error('Order not found');
     }
 
-    return { ...result.value, _id: result.value._id.toString() };
+    return { ...result, _id: result._id.toString() };
   }
 }
 

@@ -1,8 +1,12 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
-import { storage } from "./storage";
-import { insertUserSchema, insertPostcardSchema, insertOrderSchema, insertAnalyticsSchema, insertNewsletterSubscriberSchema } from "@shared/schema";
+import { mongoStorage } from "./mongodb-storage";
+import { authenticateToken, optionalAuth } from "./auth-middleware";
+import { 
+  loginSchema, registerSchema, insertPostcardSchema, insertOrderSchema, 
+  insertEventSchema, insertLocationSchema 
+} from "../shared/mongodb-schema";
 import { z } from "zod";
 
 // Initialize Stripe only if keys are available
@@ -13,11 +17,36 @@ if (process.env.STRIPE_SECRET_KEY) {
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
+  // Authentication routes
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const userData = registerSchema.parse(req.body);
+      const { user, token } = await mongoStorage.registerUser(userData);
+      res.status(201).json({ user: { ...user, passwordHash: undefined }, token });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const credentials = loginSchema.parse(req.body);
+      const { user, token } = await mongoStorage.loginUser(credentials);
+      res.json({ user: { ...user, passwordHash: undefined }, token });
+    } catch (error: any) {
+      res.status(401).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/auth/me", authenticateToken, async (req: any, res) => {
+    res.json({ user: { ...req.user, passwordHash: undefined } });
+  });
+
   // Templates
   app.get("/api/templates", async (req, res) => {
     try {
       const { category } = req.query;
-      const templates = await storage.getTemplates(category as string);
+      const templates = await mongoStorage.getTemplates(category as string);
       res.json(templates);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
