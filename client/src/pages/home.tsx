@@ -38,12 +38,12 @@ export default function Home() {
   return (
     <div className="bg-warm-white">
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-ocean-blue via-ukrainian-blue to-blue-800 text-white py-20 lg:py-32">
+      <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 text-white py-20 lg:py-32" style={{background: 'linear-gradient(to bottom right, #0077BE, #004C9F, #1e3a8a)'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="font-playfair text-4xl lg:text-6xl font-bold mb-6 leading-tight">
-                Create Beautiful <span className="text-sunflower">Odesa Postcards</span> in Minutes
+                Create Beautiful <span className="text-yellow-300">Odesa Postcards</span> in Minutes
               </h1>
               <p className="text-xl mb-8 text-blue-100 leading-relaxed">
                 Design stunning digital postcards featuring Odesa's iconic landmarks. Share memories, spread joy, and order premium printed versions.
