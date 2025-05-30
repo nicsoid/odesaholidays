@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 254 254 254; /* #FEFEFE warm white */
+  --foreground: 15 23 42; /* #0F172A slate-900 */
+  --muted: 248 250 252; /* #F8FAFC slate-50 */
+  --muted-foreground: 100 116 139; /* #64748B slate-500 */
+  --popover: 255 255 255; /* #FFFFFF */
+  --popover-foreground: 15 23 42; /* #0F172A */
+  --card: 255 255 255; /* #FFFFFF */
+  --card-foreground: 15 23 42; /* #0F172A */
+  --border: 226 232 240; /* #E2E8F0 slate-200 */
+  --input: 226 232 240; /* #E2E8F0 slate-200 */
+  --primary: 203 213 225; /* #004C9F ukrainian blue */
+  --primary-foreground: 255 255 255; /* #FFFFFF */
+  --secondary: 248 250 252; /* #F8FAFC slate-50 */
+  --secondary-foreground: 15 23 42; /* #0F172A */
+  --accent: 255 211 0; /* #FFD300 sunflower yellow */
+  --accent-foreground: 15 23 42; /* #0F172A */
+  --destructive: 239 68 68; /* #EF4444 red-500 */
+  --destructive-foreground: 248 250 252; /* #F8FAFC */
+  --ring: 203 213 225; /* #004C9F ukrainian blue */
+  --radius: 0.75rem;
+  
+  /* Custom Ukrainian color palette */
+  --ukrainian-blue: 0 76 159; /* #004C9F */
+  --sunflower: 255 211 0; /* #FFD300 */
+  --ocean-blue: 0 119 190; /* #0077BE */
+  --sunset-orange: 255 107 53; /* #FF6B35 */
+  --warm-white: 254 254 254; /* #FEFEFE */
+}
+
+.dark {
+  --background: 2 6 23; /* #020617 slate-950 */
+  --foreground: 248 250 252; /* #F8FAFC slate-50 */
+  --muted: 15 23 42; /* #0F172A slate-900 */
+  --muted-foreground: 148 163 184; /* #94A3B8 slate-400 */
+  --popover: 2 6 23; /* #020617 slate-950 */
+  --popover-foreground: 248 250 252; /* #F8FAFC slate-50 */
+  --card: 2 6 23; /* #020617 slate-950 */
+  --card-foreground: 248 250 252; /* #F8FAFC slate-50 */
+  --border: 30 41 59; /* #1E293B slate-800 */
+  --input: 30 41 59; /* #1E293B slate-800 */
+  --primary: 203 213 225; /* ukrainian blue remains same */
+  --primary-foreground: 255 255 255; /* #FFFFFF */
+  --secondary: 15 23 42; /* #0F172A slate-900 */
+  --secondary-foreground: 248 250 252; /* #F8FAFC slate-50 */
+  --accent: 255 211 0; /* sunflower remains same */
+  --accent-foreground: 15 23 42; /* #0F172A */
+  --destructive: 220 38 38; /* #DC2626 red-600 */
+  --destructive-foreground: 248 250 252; /* #F8FAFC */
+  --ring: 203 213 225; /* ukrainian blue */
+  
+  /* Dark mode Ukrainian colors */
+  --ukrainian-blue: 0 76 159; /* keep bright */
+  --sunflower: 255 211 0; /* keep bright */
+  --ocean-blue: 0 119 190; /* keep bright */
+  --sunset-orange: 255 107 53; /* keep bright */
+  --warm-white: 15 23 42; /* dark background */
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+@layer utilities {
+  .text-ukrainian-blue {
+    color: rgb(var(--ukrainian-blue));
+  }
+  
+  .bg-ukrainian-blue {
+    background-color: rgb(var(--ukrainian-blue));
+  }
+  
+  .text-sunflower {
+    color: rgb(var(--sunflower));
+  }
+  
+  .bg-sunflower {
+    background-color: rgb(var(--sunflower));
+  }
+  
+  .text-ocean-blue {
+    color: rgb(var(--ocean-blue));
+  }
+  
+  .bg-ocean-blue {
+    background-color: rgb(var(--ocean-blue));
+  }
+  
+  .text-sunset-orange {
+    color: rgb(var(--sunset-orange));
+  }
+  
+  .bg-sunset-orange {
+    background-color: rgb(var(--sunset-orange));
+  }
+  
+  .bg-warm-white {
+    background-color: rgb(var(--warm-white));
+  }
+  
+  .border-ukrainian-blue {
+    border-color: rgb(var(--ukrainian-blue));
+  }
+  
+  .hover\:bg-ukrainian-blue:hover {
+    background-color: rgb(var(--ukrainian-blue));
+  }
+  
+  .hover\:text-ukrainian-blue:hover {
+    color: rgb(var(--ukrainian-blue));
+  }
+
+  .font-playfair {
+    font-family: 'Playfair Display', serif;
+  }
+  
+  .font-inter {
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap');
