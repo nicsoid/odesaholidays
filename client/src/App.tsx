@@ -7,6 +7,10 @@ import Home from "@/pages/home";
 import Creator from "@/pages/creator";
 import Checkout from "@/pages/checkout";
 import Dashboard from "@/pages/dashboard";
+import Login from "@/pages/login";
+import Register from "@/pages/register";
+import Events from "@/pages/events";
+import Locations from "@/pages/locations";
 import NotFound from "@/pages/not-found";
 import Navigation from "@/components/navigation";
 
@@ -20,6 +24,10 @@ function Router() {
         <Route path="/creator/:templateId" component={Creator} />
         <Route path="/checkout/:postcardId" component={Checkout} />
         <Route path="/dashboard" component={Dashboard} />
+        <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
+        <Route path="/events" component={Events} />
+        <Route path="/locations" component={Locations} />
         <Route path="/gallery" component={Home} />
         <Route path="/pricing" component={Home} />
         <Route component={NotFound} />

@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Mail, Menu, X } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { Mail, Menu, X, User, LogOut } from "lucide-react";
 
 export default function Navigation() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, isAuthenticated, logout } = useAuth();
 
   const isActive = (path: string) => location === path;
 
