@@ -55,7 +55,7 @@ export default function Home() {
                     Create Free Postcard
                   </Button>
                 </Link>
-                <Button variant="outline" size="lg" className="border-2 border-yellow-300 text-yellow-300 hover:bg-yellow-300 hover:text-blue-700 text-lg px-8 py-4 h-auto">
+                <Button variant="outline" size="lg" className="border-2 border-yellow-300 bg-transparent text-yellow-300 hover:bg-yellow-300 hover:text-blue-700 text-lg px-8 py-4 h-auto">
                   <Play className="mr-2 h-5 w-5" />
                   Watch Demo
                 </Button>

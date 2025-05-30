@@ -12,7 +12,7 @@ import Navigation from "@/components/navigation";
 
 function Router() {
   return (
-    <div className="min-h-screen bg-warm-white">
+    <div className="min-h-screen bg-background">
       <Navigation />
       <Switch>
         <Route path="/" component={Home} />
@@ -20,6 +20,8 @@ function Router() {
         <Route path="/creator/:templateId" component={Creator} />
         <Route path="/checkout/:postcardId" component={Checkout} />
         <Route path="/dashboard" component={Dashboard} />
+        <Route path="/gallery" component={Home} />
+        <Route path="/pricing" component={Home} />
         <Route component={NotFound} />
       </Switch>
     </div>

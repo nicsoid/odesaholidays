@@ -212,9 +212,9 @@ export default function Creator() {
           )}
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-12">
+        <div className="grid lg:grid-cols-2 gap-8">
           {/* Template Selection & Editor */}
-          <div className="space-y-8">
+          <div className="space-y-8 lg:col-span-1">
             {!selectedTemplate ? (
               <div>
                 <h2 className="font-playfair text-2xl font-bold mb-6">Choose Your Template</h2>
