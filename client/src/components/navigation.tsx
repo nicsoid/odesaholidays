@@ -24,28 +24,61 @@ export default function Navigation() {
           
           <div className="hidden md:flex items-center space-x-8">
             <Link href="/#templates">
-              <a className="text-gray-600 hover:text-ukrainian-blue transition-colors">Templates</a>
+              <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Templates</span>
             </Link>
             <Link href="/#pricing">
-              <a className="text-gray-600 hover:text-ukrainian-blue transition-colors">Pricing</a>
+              <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Pricing</span>
             </Link>
             <Link href="/#gallery">
-              <a className="text-gray-600 hover:text-ukrainian-blue transition-colors">Gallery</a>
+              <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Gallery</span>
             </Link>
             <Link href="/events">
-              <a className="text-gray-600 hover:text-ukrainian-blue transition-colors">Events</a>
+              <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Events</span>
             </Link>
             <Link href="/locations">
-              <a className="text-gray-600 hover:text-ukrainian-blue transition-colors">Locations</a>
+              <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Locations</span>
             </Link>
-            <Link href="/dashboard">
-              <a className="text-gray-600 hover:text-ukrainian-blue transition-colors">Dashboard</a>
-            </Link>
-            <Link href="/creator">
-              <Button className="bg-ukrainian-blue hover:bg-blue-700">
-                Start Creating
-              </Button>
-            </Link>
+            {isAuthenticated && (
+              <Link href="/dashboard">
+                <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Dashboard</span>
+              </Link>
+            )}
+            
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
+                  <User className="h-4 w-4 text-gray-600" />
+                  <span className="text-sm text-gray-600">{user?.email}</span>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={logout}
+                  className="text-gray-600 hover:text-red-600"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Logout
+                </Button>
+                <Link href="/creator">
+                  <Button className="bg-ukrainian-blue hover:bg-blue-700">
+                    Start Creating
+                  </Button>
+                </Link>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <Link href="/login">
+                  <Button variant="outline" size="sm">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button className="bg-ukrainian-blue hover:bg-blue-700">
+                    Sign Up
+                  </Button>
+                </Link>
+              </div>
+            )}
           </div>
           
           <button 
@@ -61,30 +94,61 @@ export default function Navigation() {
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
               <Link href="/#templates">
-                <a className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors">Templates</a>
+                <span className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Templates</span>
               </Link>
               <Link href="/#pricing">
-                <a className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors">Pricing</a>
+                <span className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Pricing</span>
               </Link>
               <Link href="/#gallery">
-                <a className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors">Gallery</a>
+                <span className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Gallery</span>
               </Link>
               <Link href="/events">
-                <a className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors">Events</a>
+                <span className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Events</span>
               </Link>
               <Link href="/locations">
-                <a className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors">Locations</a>
+                <span className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Locations</span>
               </Link>
-              <Link href="/dashboard">
-                <a className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors">Dashboard</a>
-              </Link>
-              <div className="px-3 py-2">
-                <Link href="/creator">
-                  <Button className="w-full bg-ukrainian-blue hover:bg-blue-700">
-                    Start Creating
-                  </Button>
+              {isAuthenticated && (
+                <Link href="/dashboard">
+                  <span className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Dashboard</span>
                 </Link>
-              </div>
+              )}
+              
+              {isAuthenticated ? (
+                <div className="px-3 py-2 space-y-2">
+                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                    <User className="h-4 w-4" />
+                    <span>{user?.email}</span>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={logout}
+                    className="w-full text-gray-600 hover:text-red-600"
+                  >
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </Button>
+                  <Link href="/creator">
+                    <Button className="w-full bg-ukrainian-blue hover:bg-blue-700">
+                      Start Creating
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="px-3 py-2 space-y-2">
+                  <Link href="/login">
+                    <Button variant="outline" size="sm" className="w-full">
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button className="w-full bg-ukrainian-blue hover:bg-blue-700">
+                      Sign Up
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         )}
