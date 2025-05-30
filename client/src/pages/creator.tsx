@@ -212,19 +212,19 @@ export default function Creator() {
           )}
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Template Selection & Editor */}
-          <div className="space-y-8 lg:col-span-1">
-            {!selectedTemplate ? (
-              <div>
-                <h2 className="font-playfair text-2xl font-bold mb-6">Choose Your Template</h2>
-                <TemplateGallery 
-                  templates={templates} 
-                  showFilters={true}
-                  onTemplateSelect={handleTemplateSelect}
-                />
-              </div>
-            ) : (
+        {!selectedTemplate ? (
+          <div className="mb-8">
+            <h2 className="font-playfair text-2xl font-bold mb-6">Choose Your Template</h2>
+            <TemplateGallery 
+              templates={templates} 
+              showFilters={true}
+              onTemplateSelect={handleTemplateSelect}
+            />
+          </div>
+        ) : (
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Editor */}
+            <div className="space-y-8 lg:col-span-1">
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="font-playfair text-2xl font-bold">Customize Your Postcard</h2>
@@ -238,7 +238,17 @@ export default function Creator() {
                   >
                     Change Template
                   </Button>
-                </div>
+                
+                <div className="space-y-6">
+                  <div>
+                    <Label htmlFor="title">Postcard Title</Label>
+                    <Input
+                      id="title"
+                      value={postcardData.title || ""}
+                      onChange={(e) => setPostcardData(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="Enter your postcard title"
+                    />
+                  </div>
                 
                 <div className="space-y-6">
                   <div>

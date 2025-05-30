@@ -28,6 +28,7 @@ function Router() {
         <Route path="/register" component={Register} />
         <Route path="/events" component={Events} />
         <Route path="/locations" component={Locations} />
+        <Route path="/share/:postcardId" component={Creator} />
         <Route path="/gallery" component={Home} />
         <Route path="/pricing" component={Home} />
         <Route component={NotFound} />

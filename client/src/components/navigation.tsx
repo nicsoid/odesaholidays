@@ -23,13 +23,13 @@ export default function Navigation() {
           </Link>
           
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#templates" className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
+            <a href="/#templates" className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
               Templates
             </a>
-            <a href="#pricing" className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
+            <a href="/#pricing" className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
               Pricing
             </a>
-            <a href="#gallery" className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
+            <a href="/#gallery" className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
               Gallery
             </a>
             <Link href="/events">
@@ -93,13 +93,13 @@ export default function Navigation() {
         {isMobileMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
-              <a href="#templates" className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
+              <a href="/#templates" className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
                 Templates
               </a>
-              <a href="#pricing" className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
+              <a href="/#pricing" className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
                 Pricing
               </a>
-              <a href="#gallery" className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
+              <a href="/#gallery" className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
                 Gallery
               </a>
               <Link href="/events">
