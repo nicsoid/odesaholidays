@@ -42,6 +42,11 @@ app.use((req, res, next) => {
   try {
     await connectToDatabase();
     log("Database connected successfully");
+    
+    // Initialize storage after database connection
+    const { mongoStorage } = await import("./mongodb-storage");
+    mongoStorage.initialize();
+    log("Storage initialized successfully");
   } catch (error) {
     log("Failed to connect to database: " + error);
     process.exit(1);

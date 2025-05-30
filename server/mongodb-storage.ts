@@ -52,14 +52,18 @@ export interface IMongoStorage {
 }
 
 export class MongoStorage implements IMongoStorage {
-  private users: Collection<User>;
-  private postcards: Collection<Postcard>;
-  private events: Collection<Event>;
-  private locations: Collection<Location>;
-  private templates: Collection<Template>;
-  private orders: Collection<Order>;
+  private users!: Collection<User>;
+  private postcards!: Collection<Postcard>;
+  private events!: Collection<Event>;
+  private locations!: Collection<Location>;
+  private templates!: Collection<Template>;
+  private orders!: Collection<Order>;
 
   constructor() {
+    // Collections will be initialized later
+  }
+
+  initialize() {
     const db = getDatabase();
     this.users = db.collection('users');
     this.postcards = db.collection('postcards');
