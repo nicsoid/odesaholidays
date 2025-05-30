@@ -15,7 +15,7 @@ import { apiRequest } from "@/lib/queryClient";
 import type { Template, Postcard, InsertPostcard } from "@shared/schema";
 
 export default function Creator() {
-  const { templateId } = useParams();
+  const { templateId, postcardId } = useParams();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -37,6 +37,16 @@ export default function Creator() {
     queryKey: ["/api/templates"],
   });
 
+  // Load shared postcard if postcardId is provided
+  const { data: sharedPostcard } = useQuery<Postcard>({
+    queryKey: ["/api/postcards", postcardId],
+    enabled: !!postcardId,
+    queryFn: async () => {
+      const response = await apiRequest("GET", `/api/postcards/${postcardId}`);
+      return response.json();
+    },
+  });
+
   const createPostcardMutation = useMutation({
     mutationFn: async (data: InsertPostcard) => {
       const response = await apiRequest("POST", "/api/postcards", data);
@@ -50,10 +60,10 @@ export default function Creator() {
         description: "Your beautiful postcard is ready to share.",
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast({
         title: "Creation Failed",
-        description: error.message,
+        description: error.message || "Failed to create postcard",
         variant: "destructive",
       });
     },
@@ -61,7 +71,8 @@ export default function Creator() {
 
   const downloadMutation = useMutation({
     mutationFn: async (postcardId: number) => {
-      await apiRequest("POST", `/api/postcards/${postcardId}/download`, { userId: 1 });
+      const response = await apiRequest("POST", `/api/postcards/${postcardId}/download`);
+      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -71,14 +82,16 @@ export default function Creator() {
     },
   });
 
-  const createUserMutation = useMutation({
-    mutationFn: async (email: string) => {
-      const response = await apiRequest("POST", "/api/users", { email });
+  const shareMutation = useMutation({
+    mutationFn: async (postcardId: number) => {
+      const response = await apiRequest("POST", `/api/postcards/${postcardId}/share`);
       return response.json();
     },
     onSuccess: () => {
-      setShowEmailPrompt(false);
-      handleCreatePostcard();
+      toast({
+        title: "Shared Successfully",
+        description: "Your postcard link has been copied to clipboard.",
+      });
     },
   });
 
@@ -87,14 +100,30 @@ export default function Creator() {
       const template = templates.find(t => t.id === templateId);
       if (template) {
         setSelectedTemplate(template);
-        setPostcardData(prev => ({ ...prev, templateId }));
       }
     }
   }, [templateId, templates]);
 
+  useEffect(() => {
+    if (sharedPostcard && templates.length > 0) {
+      const template = templates.find(t => t.id === sharedPostcard.templateId);
+      if (template) {
+        setSelectedTemplate(template);
+        setPostcardData({
+          title: sharedPostcard.title,
+          message: sharedPostcard.message,
+          fontFamily: sharedPostcard.fontFamily || "Inter",
+          backgroundColor: sharedPostcard.backgroundColor || "#FFFFFF",
+          textColor: sharedPostcard.textColor || "#000000",
+          customImageUrl: sharedPostcard.customImageUrl || undefined,
+        });
+        setCurrentPostcard(sharedPostcard);
+      }
+    }
+  }, [sharedPostcard, templates]);
+
   const handleTemplateSelect = (template: Template) => {
     setSelectedTemplate(template);
-    setPostcardData(prev => ({ ...prev, templateId: template.id }));
     setLocation(`/creator/${template.id}`);
   };
 
@@ -150,22 +179,25 @@ export default function Creator() {
               <div className="space-y-4">
                 <Input
                   type="email"
-                  placeholder="Enter your email"
+                  placeholder="your@email.com"
                   value={userEmail}
                   onChange={(e) => setUserEmail(e.target.value)}
                 />
                 <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    className="flex-1"
+                  <Button
+                    variant="outline"
                     onClick={() => setShowEmailPrompt(false)}
+                    className="flex-1"
                   >
-                    Cancel
+                    Skip for Now
                   </Button>
-                  <Button 
+                  <Button
+                    onClick={() => {
+                      setShowEmailPrompt(false);
+                      handleCreatePostcard();
+                    }}
                     className="flex-1 bg-ukrainian-blue hover:bg-blue-700"
-                    onClick={() => createUserMutation.mutate(userEmail)}
-                    disabled={!userEmail || createUserMutation.isPending}
+                    disabled={!userEmail}
                   >
                     Create Postcard
                   </Button>
@@ -224,7 +256,7 @@ export default function Creator() {
         ) : (
           <div className="grid lg:grid-cols-2 gap-8">
             {/* Editor */}
-            <div className="space-y-8 lg:col-span-1">
+            <div className="space-y-8">
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="font-playfair text-2xl font-bold">Customize Your Postcard</h2>
@@ -238,17 +270,7 @@ export default function Creator() {
                   >
                     Change Template
                   </Button>
-                
-                <div className="space-y-6">
-                  <div>
-                    <Label htmlFor="title">Postcard Title</Label>
-                    <Input
-                      id="title"
-                      value={postcardData.title || ""}
-                      onChange={(e) => setPostcardData(prev => ({ ...prev, title: e.target.value }))}
-                      placeholder="Enter your postcard title"
-                    />
-                  </div>
+                </div>
                 
                 <div className="space-y-6">
                   <div>
@@ -290,12 +312,34 @@ export default function Creator() {
                     
                     <div>
                       <Label htmlFor="textColor">Text Color</Label>
-                      <input
-                        type="color"
+                      <Input
                         id="textColor"
+                        type="color"
                         value={postcardData.textColor || "#000000"}
                         onChange={(e) => setPostcardData(prev => ({ ...prev, textColor: e.target.value }))}
-                        className="w-full h-10 border border-gray-300 rounded-md"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="backgroundColor">Background Color</Label>
+                      <Input
+                        id="backgroundColor"
+                        type="color"
+                        value={postcardData.backgroundColor || "#FFFFFF"}
+                        onChange={(e) => setPostcardData(prev => ({ ...prev, backgroundColor: e.target.value }))}
+                      />
+                    </div>
+                    
+                    <div>
+                      <Label htmlFor="customImageUrl">Custom Image URL</Label>
+                      <Input
+                        id="customImageUrl"
+                        type="url"
+                        value={postcardData.customImageUrl || ""}
+                        onChange={(e) => setPostcardData(prev => ({ ...prev, customImageUrl: e.target.value }))}
+                        placeholder="https://..."
                       />
                     </div>
                   </div>
@@ -308,71 +352,69 @@ export default function Creator() {
                       onChange={(e) => setPostcardData(prev => ({ ...prev, isPublic: e.target.checked }))}
                       className="rounded"
                     />
-                    <Label htmlFor="isPublic" className="text-sm">
-                      Share in public gallery (others can see your postcard)
-                    </Label>
+                    <Label htmlFor="isPublic">Share in public gallery</Label>
                   </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Preview & Actions */}
-          <div className="space-y-8">
-            {selectedTemplate && (
-              <>
-                <div>
-                  <h3 className="font-playfair text-xl font-bold mb-4">Preview</h3>
-                  <PostcardCanvas 
-                    template={selectedTemplate}
-                    postcardData={postcardData}
-                  />
-                </div>
-                
-                <div className="space-y-4">
-                  {!currentPostcard ? (
+                  
+                  {!currentPostcard && (
                     <Button 
                       onClick={handleCreatePostcard}
                       disabled={createPostcardMutation.isPending}
-                      className="w-full bg-ukrainian-blue hover:bg-blue-700 text-lg py-3"
+                      className="w-full bg-ukrainian-blue hover:bg-blue-700"
                     >
-                      {createPostcardMutation.isPending ? (
-                        "Creating..."
-                      ) : (
-                        <>
-                          <Sparkles className="h-5 w-5 mr-2" />
-                          Create My Postcard
-                        </>
-                      )}
+                      {createPostcardMutation.isPending ? "Creating..." : "Create Postcard"}
                     </Button>
-                  ) : (
-                    <>
-                      <div className="grid grid-cols-2 gap-3">
-                        <Button 
-                          variant="outline" 
-                          onClick={handleDownload}
-                          disabled={downloadMutation.isPending}
-                        >
-                          <Download className="h-4 w-4 mr-2" />
-                          Download Free
-                        </Button>
-                        <Button 
-                          onClick={handleOrderPrint}
-                          className="bg-ukrainian-blue hover:bg-blue-700"
-                        >
-                          <ShoppingCart className="h-4 w-4 mr-2" />
-                          Print ($3.99)
-                        </Button>
-                      </div>
-                      
-                      <SocialShare postcard={currentPostcard} />
-                    </>
                   )}
                 </div>
-              </>
-            )}
+              </div>
+            </div>
+
+            {/* Preview */}
+            <div className="space-y-6">
+              <div>
+                <h3 className="font-playfair text-xl font-bold mb-4">Preview</h3>
+                <div className="bg-white p-6 rounded-lg shadow-lg">
+                  <PostcardCanvas 
+                    template={selectedTemplate}
+                    postcardData={{
+                      title: postcardData.title,
+                      message: postcardData.message,
+                      fontFamily: postcardData.fontFamily,
+                      backgroundColor: postcardData.backgroundColor,
+                      textColor: postcardData.textColor,
+                      customImageUrl: postcardData.customImageUrl,
+                    }}
+                    className="w-full max-w-md mx-auto"
+                  />
+                </div>
+              </div>
+
+              {currentPostcard && (
+                <div className="space-y-4">
+                  <SocialShare postcard={currentPostcard} />
+                  
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={handleDownload}
+                      disabled={downloadMutation.isPending}
+                      className="flex-1"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Download Free
+                    </Button>
+                    <Button
+                      onClick={handleOrderPrint}
+                      className="flex-1 bg-ukrainian-blue hover:bg-blue-700"
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      Order Print ($3.99)
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
