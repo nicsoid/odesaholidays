@@ -43,7 +43,7 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="font-playfair text-4xl lg:text-6xl font-bold mb-6 leading-tight">
-                Create Beautiful <span className="text-yellow-300">Odesa Postcards</span> in Minutes
+                Create Beautiful <span className="text-yellow-300">Odesa Holiday Postcards</span> in Minutes
               </h1>
               <p className="text-xl mb-8 text-blue-100 leading-relaxed">
                 Design stunning digital postcards featuring Odesa's iconic landmarks. Share memories, spread joy, and order premium printed versions.

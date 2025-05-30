@@ -16,7 +16,7 @@ export default function Navigation() {
           <Link href="/">
             <div className="flex items-center cursor-pointer">
               <Mail className="text-ukrainian-blue h-8 w-8 mr-2" />
-              <span className="font-playfair font-bold text-xl text-gray-900">Odesa Postcards</span>
+              <span className="font-playfair font-bold text-xl text-gray-900">Odesa Holiday</span>
             </div>
           </Link>
           
@@ -29,6 +29,12 @@ export default function Navigation() {
             </Link>
             <Link href="/#gallery">
               <a className="text-gray-600 hover:text-ukrainian-blue transition-colors">Gallery</a>
+            </Link>
+            <Link href="/events">
+              <a className="text-gray-600 hover:text-ukrainian-blue transition-colors">Events</a>
+            </Link>
+            <Link href="/locations">
+              <a className="text-gray-600 hover:text-ukrainian-blue transition-colors">Locations</a>
             </Link>
             <Link href="/dashboard">
               <a className="text-gray-600 hover:text-ukrainian-blue transition-colors">Dashboard</a>
@@ -60,6 +66,12 @@ export default function Navigation() {
               </Link>
               <Link href="/#gallery">
                 <a className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors">Gallery</a>
+              </Link>
+              <Link href="/events">
+                <a className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors">Events</a>
+              </Link>
+              <Link href="/locations">
+                <a className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors">Locations</a>
               </Link>
               <Link href="/dashboard">
                 <a className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors">Dashboard</a>
