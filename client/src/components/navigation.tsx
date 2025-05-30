@@ -23,15 +23,15 @@ export default function Navigation() {
           </Link>
           
           <div className="hidden md:flex items-center space-x-8">
-            <Link href="/#templates">
-              <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Templates</span>
-            </Link>
-            <Link href="/#pricing">
-              <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Pricing</span>
-            </Link>
-            <Link href="/#gallery">
-              <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Gallery</span>
-            </Link>
+            <a href="#templates" className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
+              Templates
+            </a>
+            <a href="#pricing" className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
+              Pricing
+            </a>
+            <a href="#gallery" className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
+              Gallery
+            </a>
             <Link href="/events">
               <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Events</span>
             </Link>
@@ -93,15 +93,15 @@ export default function Navigation() {
         {isMobileMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
-              <Link href="/#templates">
-                <span className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Templates</span>
-              </Link>
-              <Link href="/#pricing">
-                <span className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Pricing</span>
-              </Link>
-              <Link href="/#gallery">
-                <span className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Gallery</span>
-              </Link>
+              <a href="#templates" className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
+                Templates
+              </a>
+              <a href="#pricing" className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
+                Pricing
+              </a>
+              <a href="#gallery" className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
+                Gallery
+              </a>
               <Link href="/events">
                 <span className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Events</span>
               </Link>
