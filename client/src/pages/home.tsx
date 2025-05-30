@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -28,6 +29,19 @@ export default function Home() {
   const { data: templates = [] } = useQuery<Template[]>({
     queryKey: ["/api/templates"],
   });
+
+  // Handle scrolling to hash sections when navigating from other pages
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const element = document.querySelector(hash);
+      if (element) {
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+      }
+    }
+  }, []);
 
   const { data: publicPostcards = [] } = useQuery<Postcard[]>({
     queryKey: ["/api/postcards/public/gallery?limit=8"],

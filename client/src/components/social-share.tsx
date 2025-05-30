@@ -30,7 +30,7 @@ export default function SocialShare({ postcard }: SocialShareProps) {
     },
   });
 
-  const postcardUrl = `${window.location.origin}/postcard/${postcard.id}`;
+  const postcardUrl = `${window.location.origin}/share/${postcard.id}`;
   const shareText = `Check out my beautiful ${postcard.title} from Odesa! 🇺🇦 Created with Odesa Postcards ✨`;
 
   const handleShare = (platform: string, url: string) => {
