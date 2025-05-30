@@ -15,10 +15,9 @@ import type { Postcard, InsertOrder } from '@shared/schema';
 
 // Make sure to call `loadStripe` outside of a component's render to avoid
 // recreating the `Stripe` object on every render.
-if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
-  throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
-}
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+const stripePromise = import.meta.env.VITE_STRIPE_PUBLIC_KEY 
+  ? loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
+  : null;
 
 const CheckoutForm = ({ order, amount }: { order: any, amount: number }) => {
   const stripe = useStripe();
@@ -264,7 +263,7 @@ export default function Checkout() {
               </CardContent>
             </Card>
 
-            {clientSecret && (
+            {clientSecret && stripePromise ? (
               <Card>
                 <CardHeader>
                   <CardTitle>Payment Information</CardTitle>
@@ -275,7 +274,24 @@ export default function Checkout() {
                   </Elements>
                 </CardContent>
               </Card>
-            )}
+            ) : clientSecret && !stripePromise ? (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Payment Processing Unavailable</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8">
+                    <CreditCard className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                    <p className="text-gray-600 mb-4">
+                      Payment processing is currently being configured. 
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      Please contact support to complete your order manually.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : null}
           </div>
         </div>
       </div>
