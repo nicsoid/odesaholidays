@@ -55,7 +55,7 @@ export default function Home() {
                     Create Free Postcard
                   </Button>
                 </Link>
-                <Button variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-ukrainian-blue text-lg px-8 py-4 h-auto">
+                <Button variant="outline" size="lg" className="border-2 border-white text-white hover:bg-white hover:text-blue-700 text-lg px-8 py-4 h-auto">
                   <Play className="mr-2 h-5 w-5" />
                   Watch Demo
                 </Button>
@@ -105,8 +105,8 @@ export default function Home() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <Card className="hover:shadow-lg transition-shadow">
               <CardContent className="p-8">
-                <div className="bg-ukrainian-blue bg-opacity-10 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
-                  <Image className="text-ukrainian-blue h-8 w-8" />
+                <div className="bg-blue-100 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                  <Image className="text-blue-600 h-8 w-8" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Premium Templates</h3>
                 <p className="text-gray-600">Beautiful, professionally designed templates featuring Odesa's most iconic landmarks and views.</p>
@@ -115,8 +115,8 @@ export default function Home() {
             
             <Card className="hover:shadow-lg transition-shadow">
               <CardContent className="p-8">
-                <div className="bg-sunflower bg-opacity-10 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
-                  <Edit className="text-sunflower h-8 w-8" />
+                <div className="bg-blue-100 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                  <Edit className="text-blue-600 h-8 w-8" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Easy Customization</h3>
                 <p className="text-gray-600">Add your photos, customize text, choose fonts, and personalize every detail with our intuitive editor.</p>
@@ -125,8 +125,8 @@ export default function Home() {
             
             <Card className="hover:shadow-lg transition-shadow">
               <CardContent className="p-8">
-                <div className="bg-sunset-orange bg-opacity-10 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
-                  <Share2 className="text-sunset-orange h-8 w-8" />
+                <div className="bg-blue-100 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                  <Share2 className="text-blue-600 h-8 w-8" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Social Sharing</h3>
                 <p className="text-gray-600">Share instantly on Instagram, Facebook, Twitter, or send via email to friends and family worldwide.</p>
@@ -135,8 +135,8 @@ export default function Home() {
             
             <Card className="hover:shadow-lg transition-shadow">
               <CardContent className="p-8">
-                <div className="bg-ocean-blue bg-opacity-10 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
-                  <Truck className="text-ocean-blue h-8 w-8" />
+                <div className="bg-blue-100 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                  <Truck className="text-blue-600 h-8 w-8" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">Print & Ship</h3>
                 <p className="text-gray-600">Order high-quality printed postcards delivered anywhere in the world. Perfect for traditional mail.</p>
