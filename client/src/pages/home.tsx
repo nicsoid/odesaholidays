@@ -36,7 +36,7 @@ export default function Home() {
   const featuredTemplates = templates.slice(0, 4);
 
   return (
-    <div className="bg-warm-white">
+    <div className="bg-background">
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 text-white py-20 lg:py-32" style={{background: 'linear-gradient(to bottom right, #0077BE, #004C9F, #1e3a8a)'}}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

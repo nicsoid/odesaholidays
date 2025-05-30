@@ -138,7 +138,7 @@ export default function Creator() {
 
   if (showEmailPrompt) {
     return (
-      <div className="min-h-screen bg-warm-white pt-20">
+      <div className="min-h-screen bg-background pt-20">
         <div className="max-w-md mx-auto px-4 py-20">
           <Card>
             <CardContent className="p-8 text-center">
@@ -182,7 +182,7 @@ export default function Creator() {
   }
 
   return (
-    <div className="min-h-screen bg-warm-white pt-20">
+    <div className="min-h-screen bg-background pt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
