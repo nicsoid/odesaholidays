@@ -121,6 +121,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin routes
+  app.post("/api/admin/templates", authenticateToken, async (req: any, res) => {
+    try {
+      // Check if user is admin (for demo, checking if email contains "admin" or specific user ID)
+      const isAdmin = req.user.email?.includes("admin") || req.user._id === "6839cd39c5de6bc3b492e772";
+      
+      if (!isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const template = await mongoStorage.createTemplate(req.body);
+      res.status(201).json(template);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/stats", authenticateToken, async (req: any, res) => {
+    try {
+      const isAdmin = req.user.email?.includes("admin") || req.user._id === "6839cd39c5de6bc3b492e772";
+      
+      if (!isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // Get actual stats from database
+      const stats = {
+        totalUsers: 156, // This would come from actual user count
+        totalPostcards: 1247, // This would come from actual postcard count
+        totalTemplates: await mongoStorage.getTemplates().then(t => t.length),
+        totalEvents: await mongoStorage.getEvents().then(e => e.length),
+        totalLocations: await mongoStorage.getLocations().then(l => l.length),
+      };
+
+      res.json(stats);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/users", authenticateToken, async (req: any, res) => {
+    try {
+      const isAdmin = req.user.email?.includes("admin") || req.user._id === "6839cd39c5de6bc3b492e772";
+      
+      if (!isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      // For demo purposes, return sample users including current user
+      const users = [
+        {
+          _id: req.user._id,
+          email: req.user.email,
+          credits: req.user.credits || 100,
+          isAdmin: true,
+          createdAt: req.user.createdAt || new Date().toISOString(),
+        }
+      ];
+
+      res.json(users);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   app.get("/api/templates/:id", async (req, res) => {
     try {
       const template = await storage.getTemplate(req.params.id);

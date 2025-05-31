@@ -43,6 +43,11 @@ export default function Navigation() {
                 <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Dashboard</span>
               </Link>
             )}
+            {isAuthenticated && (user?.email?.includes("admin") || user?._id === "6839cd39c5de6bc3b492e772") && (
+              <Link href="/admin">
+                <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Admin</span>
+              </Link>
+            )}
             
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
@@ -111,6 +116,11 @@ export default function Navigation() {
               {isAuthenticated && (
                 <Link href="/dashboard">
                   <span className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Dashboard</span>
+                </Link>
+              )}
+              {isAuthenticated && (user?.email?.includes("admin") || user?._id === "6839cd39c5de6bc3b492e772") && (
+                <Link href="/admin">
+                  <span className="block px-3 py-2 text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Admin</span>
                 </Link>
               )}
               
