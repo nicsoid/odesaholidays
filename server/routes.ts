@@ -41,6 +41,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ user: { ...req.user, passwordHash: undefined } });
   });
 
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const result = await mongoStorage.requestPasswordReset(email);
+      res.json({ message: "Password reset email sent if account exists" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { token, password } = req.body;
+      if (!token || !password) {
+        return res.status(400).json({ message: "Token and password are required" });
+      }
+
+      const result = await mongoStorage.resetPassword(token, password);
+      res.json({ message: "Password reset successfully" });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   // Events routes
   app.get("/api/events", async (req, res) => {
     try {

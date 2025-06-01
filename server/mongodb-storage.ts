@@ -18,6 +18,8 @@ export interface IMongoStorage {
   getUserById(id: string): Promise<User | null>;
   getUserByEmail(email: string): Promise<User | null>;
   verifyToken(token: string): Promise<User | null>;
+  requestPasswordReset(email: string): Promise<{ message: string }>;
+  resetPassword(token: string, newPassword: string): Promise<{ message: string }>;
 
   // Postcards
   createPostcard(postcard: InsertPostcard): Promise<Postcard>;
@@ -134,6 +136,88 @@ export class MongoStorage implements IMongoStorage {
 
   private generateToken(userId: string): string {
     return jwt.sign({ userId }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '7d' });
+  }
+
+  private generateResetToken(): string {
+    return jwt.sign({ reset: true, timestamp: Date.now() }, process.env.JWT_SECRET || 'fallback-secret', { expiresIn: '1h' });
+  }
+
+  async requestPasswordReset(email: string): Promise<{ message: string }> {
+    try {
+      const user = await this.users.findOne({ email });
+      
+      if (!user) {
+        // Return success message even if user doesn't exist for security
+        return { message: "Password reset email sent if account exists" };
+      }
+
+      const resetToken = this.generateResetToken();
+      
+      // Store reset token with expiration (1 hour from now)
+      await this.users.updateOne(
+        { _id: user._id },
+        { 
+          $set: { 
+            resetToken,
+            resetTokenExpiry: new Date(Date.now() + 60 * 60 * 1000) // 1 hour
+          } 
+        }
+      );
+
+      // In a real application, you would send an email here
+      // For now, we'll log the reset link (in production, this should be sent via email)
+      const resetLink = `${process.env.CLIENT_URL || 'http://localhost:5000'}/reset-password?token=${resetToken}`;
+      console.log(`Password reset link for ${email}: ${resetLink}`);
+
+      return { message: "Password reset email sent if account exists" };
+    } catch (error) {
+      throw new Error("Failed to process password reset request");
+    }
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    try {
+      // Verify the reset token
+      let decoded;
+      try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret') as any;
+      } catch (error) {
+        throw new Error("Invalid or expired reset token");
+      }
+
+      if (!decoded.reset) {
+        throw new Error("Invalid reset token");
+      }
+
+      // Find user with this reset token
+      const user = await this.users.findOne({ 
+        resetToken: token,
+        resetTokenExpiry: { $gt: new Date() }
+      });
+
+      if (!user) {
+        throw new Error("Invalid or expired reset token");
+      }
+
+      // Hash the new password
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+      // Update user password and remove reset token
+      await this.users.updateOne(
+        { _id: user._id },
+        { 
+          $set: { passwordHash: hashedPassword },
+          $unset: { resetToken: "", resetTokenExpiry: "" }
+        }
+      );
+
+      return { message: "Password reset successfully" };
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error("Failed to reset password");
+    }
   }
 
   // Postcard methods

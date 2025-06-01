@@ -14,6 +14,8 @@ export const userSchema = z.object({
   referralCode: z.string().optional(),
   referredBy: z.string().optional(),
   credits: z.number().default(0),
+  resetToken: z.string().optional(),
+  resetTokenExpiry: z.date().optional(),
   createdAt: z.date().default(() => new Date()),
   updatedAt: z.date().default(() => new Date()),
 });
