@@ -9,6 +9,8 @@ import Checkout from "@/pages/checkout";
 import Dashboard from "@/pages/dashboard";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
+import ForgotPassword from "@/pages/forgot-password";
+import ResetPassword from "@/pages/reset-password";
 import Events from "@/pages/events";
 import Locations from "@/pages/locations";
 import PostcardView from "@/pages/postcard-view";
@@ -28,6 +30,8 @@ function Router() {
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/login" component={Login} />
         <Route path="/register" component={Register} />
+        <Route path="/forgot-password" component={ForgotPassword} />
+        <Route path="/reset-password" component={ResetPassword} />
         <Route path="/events" component={Events} />
         <Route path="/locations" component={Locations} />
         <Route path="/share/:postcardId" component={PostcardView} />
