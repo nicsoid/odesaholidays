@@ -76,15 +76,15 @@ export default function TemplateGallery({ templates, showFilters = true, onTempl
             <CardContent className="p-4">
               <h3 className="font-semibold text-gray-900 mb-1">{template.name}</h3>
               <p className="text-sm text-gray-600 mb-3">{template.description}</p>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col space-y-2">
                 <span className={`text-xs font-medium ${template.isPremium ? 'text-sunset-orange' : 'text-gray-500'}`}>
                   {template.isPremium ? 'Premium' : 'Free Template'}
                 </span>
                 <Button 
                   size="sm" 
-                  className={template.isPremium 
+                  className={`w-full ${template.isPremium 
                     ? "bg-sunset-orange hover:bg-orange-600 text-white" 
-                    : "bg-ukrainian-blue hover:bg-blue-700 text-white"}
+                    : "bg-ukrainian-blue hover:bg-blue-700 text-white"}`}
                   onClick={(e) => {
                     e.stopPropagation();
                     handleTemplateClick(template);

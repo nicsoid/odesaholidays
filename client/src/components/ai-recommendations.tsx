@@ -81,10 +81,10 @@ export default function AIRecommendations() {
 
   if (!userPreferences?.completedOnboarding) {
     return (
-      <Card>
+      <Card className="h-fit sticky top-24">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-yellow-500" />
+            <Sparkles className="h-5 w-5 text-ukrainian-blue" />
             AI-Powered Recommendations
           </CardTitle>
           <CardDescription>
@@ -92,24 +92,38 @@ export default function AIRecommendations() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Link href="/onboarding">
-            <Button className="w-full">
-              Complete Onboarding
-              <ChevronRight className="h-4 w-4 ml-2" />
-            </Button>
-          </Link>
+          <div className="text-center space-y-4">
+            <div className="bg-gradient-to-r from-blue-50 to-yellow-50 p-4 rounded-lg">
+              <Star className="h-8 w-8 text-ukrainian-blue mx-auto mb-2" />
+              <h3 className="font-semibold text-gray-900 mb-2">Unlock Personal Recommendations</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Complete your setup to get AI-powered suggestions tailored to your interests and travel style.
+              </p>
+            </div>
+            <Link href="/onboarding">
+              <Button className="w-full bg-ukrainian-blue hover:bg-blue-700">
+                <Sparkles className="mr-2 h-4 w-4" />
+                Complete Setup
+              </Button>
+            </Link>
+            <div className="mt-4 pt-4 border-t">
+              <p className="text-xs text-gray-500">
+                Preview: Get suggestions for landmarks like Potemkin Stairs, Opera House, and hidden gems based on your interests!
+              </p>
+            </div>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
-  if (isLoading) {
+  if (isLoading || isGenerating) {
     return (
-      <Card>
+      <Card className="h-fit sticky top-24">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-yellow-500 animate-spin" />
-            Generating Recommendations...
+            <Sparkles className="h-5 w-5 text-ukrainian-blue animate-spin" />
+            Generating AI Recommendations...
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -124,12 +138,12 @@ export default function AIRecommendations() {
   }
 
   return (
-    <Card>
+    <Card className="h-fit sticky top-24">
       <CardHeader>
         <div className="flex justify-between items-start">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-yellow-500" />
+              <Sparkles className="h-5 w-5 text-ukrainian-blue" />
               Personalized for You
             </CardTitle>
             <CardDescription>
