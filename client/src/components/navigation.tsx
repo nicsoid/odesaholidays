@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { Mail, Menu, X, User, LogOut } from "lucide-react";
+import { Mail, Menu, X, User, LogOut, Crown } from "lucide-react";
 
 export default function Navigation() {
   const [location] = useLocation();
@@ -55,6 +55,12 @@ export default function Navigation() {
                   <User className="h-4 w-4 text-gray-600" />
                   <span className="text-sm text-gray-600">{user?.email}</span>
                 </div>
+                <Link href="/subscription">
+                  <Button variant="outline" size="sm" className="text-yellow-600 border-yellow-400 hover:bg-yellow-50">
+                    <Crown className="h-4 w-4 mr-2" />
+                    Subscribe
+                  </Button>
+                </Link>
                 <Button 
                   variant="outline" 
                   size="sm"

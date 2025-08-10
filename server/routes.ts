@@ -5,7 +5,7 @@ import { storage } from "./storage";
 import { mongoStorage } from "./mongodb-storage";
 import { authenticateToken, optionalAuth } from "./auth-middleware";
 import { insertUserSchema, insertPostcardSchema, insertOrderSchema, insertAnalyticsSchema, insertNewsletterSubscriberSchema } from "@shared/schema";
-import { loginSchema, registerSchema } from "../shared/mongodb-schema";
+import { loginSchema, registerSchema, insertSubscriptionPlanSchema } from "../shared/mongodb-schema";
 import { z } from "zod";
 
 // Initialize Stripe only if keys are available
@@ -556,6 +556,124 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Template deleted successfully" });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Subscription routes
+  app.get("/api/subscription/plans", async (req, res) => {
+    try {
+      const plans = await mongoStorage.getSubscriptionPlans();
+      res.json(plans);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/subscription/status", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const status = await mongoStorage.getUserSubscriptionStatus(userId);
+      res.json(status);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/subscription/create", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const { planId } = req.body;
+
+      if (!planId) {
+        return res.status(400).json({ message: "Plan ID is required" });
+      }
+
+      // Get the subscription plan
+      const plan = await mongoStorage.getSubscriptionPlan(planId);
+      if (!plan) {
+        return res.status(404).json({ message: "Subscription plan not found" });
+      }
+
+      // Create or retrieve Stripe customer
+      let customer;
+      if (req.user.stripeCustomerId) {
+        customer = await stripe.customers.retrieve(req.user.stripeCustomerId);
+      } else {
+        customer = await stripe.customers.create({
+          email: req.user.email,
+          metadata: { userId }
+        });
+        
+        // Update user with Stripe customer ID
+        await mongoStorage.updateUserSubscription(userId, {
+          stripeSubscriptionId: '',
+          subscriptionStatus: 'incomplete',
+          subscriptionPlanId: planId,
+          subscriptionStartDate: new Date()
+        });
+      }
+
+      // Create Stripe subscription
+      const subscription = await stripe.subscriptions.create({
+        customer: customer.id,
+        items: [{ price: plan.stripePriceId }],
+        payment_behavior: 'default_incomplete',
+        payment_settings: { save_default_payment_method: 'on_subscription' },
+        expand: ['latest_invoice.payment_intent'],
+      });
+
+      // Update user subscription in database
+      await mongoStorage.updateUserSubscription(userId, {
+        stripeSubscriptionId: subscription.id,
+        subscriptionStatus: subscription.status,
+        subscriptionPlanId: planId,
+        subscriptionStartDate: new Date(subscription.created * 1000)
+      });
+
+      res.json({
+        subscriptionId: subscription.id,
+        clientSecret: (subscription.latest_invoice as any)?.payment_intent?.client_secret,
+        status: subscription.status
+      });
+
+    } catch (error: any) {
+      console.error('Subscription creation error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/subscription/cancel", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const user = await mongoStorage.getUserById(userId);
+      
+      if (!user?.stripeSubscriptionId) {
+        return res.status(404).json({ message: "No active subscription found" });
+      }
+
+      // Cancel subscription in Stripe
+      await stripe.subscriptions.cancel(user.stripeSubscriptionId);
+
+      // Update user subscription status
+      await mongoStorage.cancelUserSubscription(userId);
+
+      res.json({ message: "Subscription canceled successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Admin subscription management
+  app.post("/api/admin/subscription/plans", authenticateToken, isAdmin, async (req, res) => {
+    try {
+      const planData = insertSubscriptionPlanSchema.parse(req.body);
+      const plan = await mongoStorage.createSubscriptionPlan(planData);
+      res.status(201).json(plan);
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid plan data", errors: error.errors });
+      }
+      res.status(500).json({ message: error.message });
     }
   });
 

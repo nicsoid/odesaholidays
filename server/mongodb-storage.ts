@@ -8,7 +8,8 @@ import type {
   Event, InsertEvent,
   Location, InsertLocation,
   Template, InsertTemplate,
-  Order, InsertOrder
+  Order, InsertOrder,
+  SubscriptionPlan, InsertSubscriptionPlan
 } from '../shared/mongodb-schema';
 
 export interface IMongoStorage {
@@ -62,6 +63,20 @@ export interface IMongoStorage {
   getOrder(id: string): Promise<Order | null>;
   getOrdersByUser(userId: string): Promise<Order[]>;
   updateOrderStatus(id: string, status: string, stripePaymentIntentId?: string): Promise<Order>;
+
+  // Subscriptions
+  createSubscriptionPlan(plan: InsertSubscriptionPlan): Promise<SubscriptionPlan>;
+  getSubscriptionPlans(): Promise<SubscriptionPlan[]>;
+  getSubscriptionPlan(id: string): Promise<SubscriptionPlan | null>;
+  updateUserSubscription(userId: string, subscriptionData: {
+    stripeSubscriptionId: string;
+    subscriptionStatus: string;
+    subscriptionPlanId: string;
+    subscriptionStartDate: Date;
+    subscriptionEndDate?: Date;
+  }): Promise<User>;
+  cancelUserSubscription(userId: string): Promise<User>;
+  getUserSubscriptionStatus(userId: string): Promise<{ isSubscribed: boolean; plan?: SubscriptionPlan; status?: string }>;
 }
 
 export class MongoStorage implements IMongoStorage {
@@ -71,6 +86,7 @@ export class MongoStorage implements IMongoStorage {
   private locations!: Collection<Location>;
   private templates!: Collection<Template>;
   private orders!: Collection<Order>;
+  private subscriptionPlans!: Collection<SubscriptionPlan>;
 
   constructor() {
     // Collections will be initialized later
@@ -84,6 +100,7 @@ export class MongoStorage implements IMongoStorage {
     this.locations = db.collection('locations');
     this.templates = db.collection('templates');
     this.orders = db.collection('orders');
+    this.subscriptionPlans = db.collection('subscriptionPlans');
   }
 
   // Authentication methods
@@ -590,6 +607,118 @@ export class MongoStorage implements IMongoStorage {
     }
 
     return { ...result, _id: result._id.toString() };
+  }
+
+  // Subscription methods
+  async createSubscriptionPlan(planData: InsertSubscriptionPlan): Promise<SubscriptionPlan> {
+    try {
+      const plan = { ...planData, createdAt: new Date() };
+      const result = await this.subscriptionPlans.insertOne(plan as SubscriptionPlan);
+      return { ...plan, _id: result.insertedId.toString() } as SubscriptionPlan;
+    } catch (error) {
+      throw new Error("Failed to create subscription plan");
+    }
+  }
+
+  async getSubscriptionPlans(): Promise<SubscriptionPlan[]> {
+    try {
+      const plans = await this.subscriptionPlans.find({ isActive: true }).toArray();
+      return plans.map(plan => ({
+        ...plan,
+        _id: plan._id.toString()
+      })) as SubscriptionPlan[];
+    } catch (error) {
+      throw new Error("Failed to get subscription plans");
+    }
+  }
+
+  async getSubscriptionPlan(id: string): Promise<SubscriptionPlan | null> {
+    try {
+      const plan = await this.subscriptionPlans.findOne({ id });
+      if (!plan) return null;
+      return { ...plan, _id: plan._id.toString() } as SubscriptionPlan;
+    } catch (error) {
+      throw new Error("Failed to get subscription plan");
+    }
+  }
+
+  async updateUserSubscription(userId: string, subscriptionData: {
+    stripeSubscriptionId: string;
+    subscriptionStatus: string;
+    subscriptionPlanId: string;
+    subscriptionStartDate: Date;
+    subscriptionEndDate?: Date;
+  }): Promise<User> {
+    try {
+      const result = await this.users.findOneAndUpdate(
+        { _id: new ObjectId(userId) },
+        { 
+          $set: { 
+            ...subscriptionData,
+            updatedAt: new Date() 
+          } 
+        },
+        { returnDocument: 'after' }
+      );
+
+      if (!result) {
+        throw new Error("User not found");
+      }
+
+      return { ...result, _id: result._id.toString() } as User;
+    } catch (error) {
+      throw new Error("Failed to update user subscription");
+    }
+  }
+
+  async cancelUserSubscription(userId: string): Promise<User> {
+    try {
+      const result = await this.users.findOneAndUpdate(
+        { _id: new ObjectId(userId) },
+        { 
+          $set: { 
+            subscriptionStatus: 'canceled',
+            updatedAt: new Date() 
+          } 
+        },
+        { returnDocument: 'after' }
+      );
+
+      if (!result) {
+        throw new Error("User not found");
+      }
+
+      return { ...result, _id: result._id.toString() } as User;
+    } catch (error) {
+      throw new Error("Failed to cancel user subscription");
+    }
+  }
+
+  async getUserSubscriptionStatus(userId: string): Promise<{ isSubscribed: boolean; plan?: SubscriptionPlan; status?: string }> {
+    try {
+      const user = await this.users.findOne({ _id: new ObjectId(userId) });
+      if (!user || !user.subscriptionStatus) {
+        return { isSubscribed: false };
+      }
+
+      const isActive = user.subscriptionStatus === 'active' || user.subscriptionStatus === 'trialing';
+      
+      if (isActive && user.subscriptionPlanId) {
+        const plan = await this.getSubscriptionPlan(user.subscriptionPlanId);
+        return { 
+          isSubscribed: true, 
+          plan: plan || undefined, 
+          status: user.subscriptionStatus 
+        };
+      }
+
+      return { 
+        isSubscribed: false, 
+        status: user.subscriptionStatus 
+      };
+    } catch (error) {
+      throw new Error("Failed to get user subscription status");
+    }
   }
 }
 

@@ -47,6 +47,11 @@ app.use((req, res, next) => {
     const { mongoStorage } = await import("./mongodb-storage");
     mongoStorage.initialize();
     log("Storage initialized successfully");
+    
+    // Initialize subscription plans
+    const { initializeSubscriptionPlans } = await import("./init-subscription-plans");
+    await initializeSubscriptionPlans();
+    log("Subscription plans initialized");
   } catch (error) {
     log("MongoDB connection failed, continuing with memory storage: " + error);
   }

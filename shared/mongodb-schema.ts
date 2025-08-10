@@ -11,6 +11,11 @@ export const userSchema = z.object({
   profileImageUrl: z.string().optional(),
   isEmailVerified: z.boolean().default(false),
   stripeCustomerId: z.string().optional(),
+  stripeSubscriptionId: z.string().optional(),
+  subscriptionStatus: z.enum(['active', 'canceled', 'past_due', 'incomplete', 'trialing']).optional(),
+  subscriptionPlanId: z.string().optional(),
+  subscriptionStartDate: z.date().optional(),
+  subscriptionEndDate: z.date().optional(),
   referralCode: z.string().optional(),
   referredBy: z.string().optional(),
   credits: z.number().default(0),
@@ -104,6 +109,19 @@ export const orderSchema = z.object({
   updatedAt: z.date().default(() => new Date()),
 });
 
+// Subscription plan schema
+export const subscriptionPlanSchema = z.object({
+  _id: z.string().optional(),
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  stripePriceId: z.string(),
+  monthlyPrice: z.number(),
+  features: z.array(z.string()),
+  isActive: z.boolean().default(true),
+  createdAt: z.date().default(() => new Date()),
+});
+
 // Auth schemas for login/register
 export const loginSchema = z.object({
   email: z.string().email(),
@@ -164,6 +182,12 @@ export const insertOrderSchema = orderSchema.omit({
   status: true,
 });
 
+export const insertSubscriptionPlanSchema = subscriptionPlanSchema.omit({
+  _id: true,
+  createdAt: true,
+  isActive: true,
+});
+
 // Type exports
 export type User = z.infer<typeof userSchema>;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -184,3 +208,5 @@ export type InsertTemplate = z.infer<typeof insertTemplateSchema>;
 
 export type Order = z.infer<typeof orderSchema>;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
+export type SubscriptionPlan = z.infer<typeof subscriptionPlanSchema>;
+export type InsertSubscriptionPlan = z.infer<typeof insertSubscriptionPlanSchema>;

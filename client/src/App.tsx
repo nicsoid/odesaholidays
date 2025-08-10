@@ -15,6 +15,7 @@ import Events from "@/pages/events";
 import Locations from "@/pages/locations";
 import PostcardView from "@/pages/postcard-view";
 import Admin from "@/pages/admin";
+import Subscription from "@/pages/subscription";
 import NotFound from "@/pages/not-found";
 import Navigation from "@/components/navigation";
 
@@ -37,6 +38,7 @@ function Router() {
         <Route path="/locations" component={Locations} />
         <Route path="/share/:postcardId" component={PostcardView} />
         <Route path="/admin" component={Admin} />
+        <Route path="/subscription" component={Subscription} />
         <Route path="/gallery" component={Home} />
         <Route path="/pricing" component={Home} />
         <Route component={NotFound} />
