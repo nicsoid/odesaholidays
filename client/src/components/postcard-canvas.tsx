@@ -56,27 +56,41 @@ export default function PostcardCanvas({ template, postcardData, className = "" 
       ctx.font = `16px ${postcardData.fontFamily || 'Inter'}, sans-serif`;
       const message = postcardData.message || 'Having an amazing time!';
       
-      // Word wrap message
-      const words = message.split(' ');
-      let line = '';
+      // Handle line breaks and word wrapping
+      const paragraphs = message.split('\n');
       let y = textAreaY + 30;
       const maxWidth = canvas.width - (padding * 2);
       const lineHeight = 20;
 
-      for (let n = 0; n < words.length; n++) {
-        const testLine = line + words[n] + ' ';
-        const metrics = ctx.measureText(testLine);
-        const testWidth = metrics.width;
-        
-        if (testWidth > maxWidth && n > 0) {
-          ctx.fillText(line, padding, y);
-          line = words[n] + ' ';
+      paragraphs.forEach((paragraph) => {
+        if (paragraph.trim() === '') {
+          // Empty line - add space
           y += lineHeight;
-        } else {
-          line = testLine;
+          return;
         }
-      }
-      ctx.fillText(line, padding, y);
+
+        const words = paragraph.split(' ');
+        let line = '';
+
+        for (let n = 0; n < words.length; n++) {
+          const testLine = line + words[n] + ' ';
+          const metrics = ctx.measureText(testLine);
+          const testWidth = metrics.width;
+          
+          if (testWidth > maxWidth && n > 0) {
+            ctx.fillText(line, padding, y);
+            line = words[n] + ' ';
+            y += lineHeight;
+          } else {
+            line = testLine;
+          }
+        }
+        
+        if (line.trim()) {
+          ctx.fillText(line, padding, y);
+          y += lineHeight;
+        }
+      });
 
       // Brand watermark
       ctx.font = '12px Inter, sans-serif';
