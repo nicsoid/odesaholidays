@@ -26,6 +26,7 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/creator" component={Creator} />
         <Route path="/creator/:templateId" component={Creator} />
+        <Route path="/creator/:templateId/:postcardId" component={Creator} />
         <Route path="/checkout/:postcardId" component={Checkout} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/login" component={Login} />

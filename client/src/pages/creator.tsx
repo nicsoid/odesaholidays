@@ -75,12 +75,37 @@ export default function Creator() {
       return response.json();
     },
     onSuccess: () => {
+      // Generate and download the postcard image
+      downloadPostcardImage();
       toast({
-        title: "Download Started",
-        description: "Your postcard is being downloaded.",
+        title: "Download Complete",
+        description: "Your postcard has been downloaded.",
       });
     },
   });
+
+  const downloadPostcardImage = () => {
+    // Find the canvas element
+    const canvas = document.querySelector('canvas');
+    if (!canvas) {
+      toast({
+        title: "Download Failed",
+        description: "Unable to generate postcard image.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Create download link
+    const link = document.createElement('a');
+    link.download = `odesa-postcard-${Date.now()}.png`;
+    link.href = canvas.toDataURL('image/png');
+    
+    // Trigger download
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const shareMutation = useMutation({
     mutationFn: async (postcardId: number) => {
@@ -186,7 +211,10 @@ export default function Creator() {
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
-                    onClick={() => setShowEmailPrompt(false)}
+                    onClick={() => {
+                      setShowEmailPrompt(false);
+                      handleCreatePostcard();
+                    }}
                     className="flex-1"
                   >
                     Skip for Now
@@ -376,12 +404,12 @@ export default function Creator() {
                   <PostcardCanvas 
                     template={selectedTemplate}
                     postcardData={{
-                      title: postcardData.title,
-                      message: postcardData.message,
-                      fontFamily: postcardData.fontFamily,
-                      backgroundColor: postcardData.backgroundColor,
-                      textColor: postcardData.textColor,
-                      customImageUrl: postcardData.customImageUrl,
+                      title: postcardData.title || undefined,
+                      message: postcardData.message || undefined,
+                      fontFamily: postcardData.fontFamily || undefined,
+                      backgroundColor: postcardData.backgroundColor || undefined,
+                      textColor: postcardData.textColor || undefined,
+                      customImageUrl: postcardData.customImageUrl || undefined,
                     }}
                     className="w-full max-w-md mx-auto"
                   />

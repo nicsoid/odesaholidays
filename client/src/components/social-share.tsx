@@ -62,13 +62,33 @@ export default function SocialShare({ postcard }: SocialShareProps) {
       icon: Instagram,
       color: "bg-pink-500 hover:bg-pink-600",
       platform: "instagram",
-      url: `https://www.instagram.com/`, // Instagram doesn't support direct URL sharing
+      url: `https://www.instagram.com/`,
       action: () => {
-        shareMutation.mutate({ platform: "instagram" });
-        toast({
-          title: "Instagram Sharing",
-          description: "Download your postcard and share it on Instagram!",
-        });
+        // Generate canvas image and download for Instagram sharing
+        const canvas = document.querySelector('canvas');
+        if (canvas) {
+          const link = document.createElement('a');
+          link.download = `odesa-postcard-for-instagram-${Date.now()}.png`;
+          link.href = canvas.toDataURL('image/png');
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          // Open Instagram
+          window.open('https://www.instagram.com/', '_blank');
+          
+          shareMutation.mutate({ platform: "instagram" });
+          toast({
+            title: "Ready for Instagram!",
+            description: "Image downloaded. Upload it to Instagram and add your story!",
+          });
+        } else {
+          toast({
+            title: "Image Not Ready",
+            description: "Please wait for your postcard to load completely.",
+            variant: "destructive",
+          });
+        }
       }
     },
     {
