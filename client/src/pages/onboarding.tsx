@@ -43,7 +43,7 @@ export default function Onboarding() {
       // Show achievement toast
       toast({
         title: "🎉 Welcome to Odesa Holiday!",
-        description: `You've earned ${data.pointsEarned} points and unlocked your first achievement!`,
+        description: `You've earned ${data.pointsEarned} points and unlocked your first achievement! AI recommendations are now available.`,
       });
 
       // Redirect to creator after celebration
@@ -51,7 +51,10 @@ export default function Onboarding() {
         setLocation("/creator");
       }, 3000);
 
+      // Invalidate queries to refresh data
       queryClient.invalidateQueries({ queryKey: ["/api/user/stats"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/user/preferences"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/ai/recommendations"] });
     },
     onError: (error: any) => {
       toast({

@@ -29,12 +29,22 @@ export default function AIRecommendations() {
   // Get user preferences
   const { data: userPreferences } = useQuery({
     queryKey: ["/api/user/preferences"],
+    retry: 1,
   });
 
   // Get AI recommendations
-  const { data: recommendations = [], isLoading } = useQuery<LandmarkRecommendation[]>({
+  const { data: recommendations = [], isLoading, error } = useQuery<LandmarkRecommendation[]>({
     queryKey: ["/api/ai/recommendations"],
     enabled: !!userPreferences?.completedOnboarding,
+    retry: 2,
+  });
+
+  // Debug: log the userPreferences to see what we're getting
+  console.log('AI Recommendations Debug:', { 
+    userPreferences, 
+    completedOnboarding: userPreferences?.completedOnboarding,
+    recommendations,
+    error
   });
 
   // Refresh recommendations mutation

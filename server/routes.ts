@@ -700,7 +700,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user._id;
       const preferencesData = insertUserPreferencesSchema.parse({
         ...req.body,
-        userId
+        userId,
+        completedOnboarding: true
       });
 
       // Create user preferences
