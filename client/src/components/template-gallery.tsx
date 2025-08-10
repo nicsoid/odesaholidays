@@ -81,6 +81,10 @@ export default function TemplateGallery({ templates, showFilters = true, onTempl
                   className={template.isPremium 
                     ? "bg-sunset-orange hover:bg-orange-600 text-white" 
                     : "bg-ukrainian-blue hover:bg-blue-700 text-white"}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleTemplateClick(template);
+                  }}
                 >
                   Use Template
                 </Button>

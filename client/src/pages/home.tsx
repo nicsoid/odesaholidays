@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { 
   Mail, 
   Sparkles, 
@@ -26,6 +26,8 @@ import NewsletterSignup from "@/components/newsletter-signup";
 import type { Template, Postcard } from "@shared/schema";
 
 export default function Home() {
+  const [, setLocation] = useLocation();
+  
   const { data: templates = [] } = useQuery<Template[]>({
     queryKey: ["/api/templates"],
   });
@@ -48,6 +50,10 @@ export default function Home() {
   });
 
   const featuredTemplates = templates.slice(0, 4);
+
+  const handleTemplateSelect = (template: Template) => {
+    setLocation(`/creator/${template.id}`);
+  };
 
   return (
     <div className="bg-background">
@@ -171,7 +177,11 @@ export default function Home() {
               Choose from our curated collection of stunning Odesa landmarks and coastal views.
             </p>
           </div>
-          <TemplateGallery templates={featuredTemplates} showFilters={false} />
+          <TemplateGallery 
+            templates={featuredTemplates} 
+            showFilters={false} 
+            onTemplateSelect={handleTemplateSelect}
+          />
           <div className="text-center mt-12">
             <Link href="/creator">
               <Button variant="outline" size="lg" className="text-gray-700 hover:bg-gray-200">

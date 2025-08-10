@@ -152,7 +152,7 @@ export default function Creator() {
     setLocation(`/creator/${template.id}`);
   };
 
-  const handleCreatePostcard = () => {
+  const handleCreatePostcard = (skipEmailPrompt = false) => {
     if (!selectedTemplate) {
       toast({
         title: "Select a Template",
@@ -162,7 +162,7 @@ export default function Creator() {
       return;
     }
 
-    if (!userEmail && !currentPostcard) {
+    if (!userEmail && !currentPostcard && !skipEmailPrompt) {
       setShowEmailPrompt(true);
       return;
     }
@@ -213,7 +213,7 @@ export default function Creator() {
                     variant="outline"
                     onClick={() => {
                       setShowEmailPrompt(false);
-                      handleCreatePostcard();
+                      handleCreatePostcard(true);
                     }}
                     className="flex-1"
                   >
@@ -222,7 +222,7 @@ export default function Creator() {
                   <Button
                     onClick={() => {
                       setShowEmailPrompt(false);
-                      handleCreatePostcard();
+                      handleCreatePostcard(true);
                     }}
                     className="flex-1 bg-ukrainian-blue hover:bg-blue-700"
                     disabled={!userEmail}
