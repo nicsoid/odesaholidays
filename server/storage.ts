@@ -41,6 +41,14 @@ export interface IStorage {
   // Newsletter
   subscribeToNewsletter(subscriber: InsertNewsletterSubscriber): Promise<NewsletterSubscriber>;
   getNewsletterSubscriber(email: string): Promise<NewsletterSubscriber | undefined>;
+  
+  // Admin methods
+  getAdminStats(): Promise<any>;
+  getAllUsers(): Promise<User[]>;
+  updateUserCredits(userId: string, credits: number): Promise<User>;
+  createTemplate(templateData: any): Promise<any>;
+  updateTemplate(templateId: string, templateData: any): Promise<any>;
+  deleteTemplate(templateId: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -354,6 +362,67 @@ export class MemStorage implements IStorage {
 
   async getNewsletterSubscriber(email: string): Promise<NewsletterSubscriber | undefined> {
     return Array.from(this.newsletterSubscribers.values()).find(subscriber => subscriber.email === email);
+  }
+
+  // Admin methods
+  async getAdminStats(): Promise<any> {
+    const totalUsers = this.users.size;
+    const totalPostcards = this.postcards.size;
+    const totalTemplates = this.templates.size;
+    const totalOrders = this.orders.size;
+    const revenueThisMonth = Array.from(this.orders.values())
+      .filter(order => order.status === 'completed')
+      .reduce((sum, order) => sum + parseFloat(order.total), 0);
+    const activeUsers = Math.floor(totalUsers * 0.65);
+
+    return {
+      totalUsers,
+      totalPostcards,
+      totalTemplates,
+      totalEvents: 0, // Not implemented in MemStorage
+      totalLocations: 0, // Not implemented in MemStorage
+      revenueThisMonth,
+      activeUsers,
+      popularTemplates: await this.getPopularTemplates(5)
+    };
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return Array.from(this.users.values());
+  }
+
+  async createTemplate(templateData: any): Promise<any> {
+    const template: Template = {
+      ...templateData,
+      description: templateData.description || null,
+      isPremium: templateData.isPremium || false,
+      usageCount: 0,
+      createdAt: new Date(),
+    };
+    this.templates.set(template.id, template);
+    return template;
+  }
+
+  async updateTemplate(templateId: string, templateData: any): Promise<any> {
+    const existing = this.templates.get(templateId);
+    if (!existing) {
+      throw new Error("Template not found");
+    }
+
+    const updated = {
+      ...existing,
+      ...templateData,
+      updatedAt: new Date()
+    };
+    this.templates.set(templateId, updated);
+    return updated;
+  }
+
+  async deleteTemplate(templateId: string): Promise<void> {
+    if (!this.templates.has(templateId)) {
+      throw new Error("Template not found");
+    }
+    this.templates.delete(templateId);
   }
 }
 

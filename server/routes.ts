@@ -457,6 +457,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin routes - protected by admin middleware
+  const isAdmin = (req: any, res: any, next: any) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+    
+    // Check if user is admin (only favt@i.ua)
+    const user = req.user;
+    const userEmail = user?.claims?.sub === 'favt@i.ua' ? 'favt@i.ua' : user?.email;
+    
+    if (userEmail !== 'favt@i.ua') {
+      return res.status(403).json({ message: "Admin access required" });
+    }
+    next();
+  };
+
+  // Admin statistics
+  app.get("/api/admin/stats", authenticateToken, isAdmin, async (req, res) => {
+    try {
+      const stats = await storage.getAdminStats();
+      res.json(stats);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Admin user management
+  app.get("/api/admin/users", authenticateToken, isAdmin, async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Update user credits
+  app.put("/api/admin/users/:userId/credits", authenticateToken, isAdmin, async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { credits } = req.body;
+      
+      if (typeof credits !== 'number' || credits < 0) {
+        return res.status(400).json({ message: "Invalid credits value" });
+      }
+
+      const result = await storage.updateUserCredits(userId, credits);
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Admin template management
+  app.post("/api/admin/templates", authenticateToken, isAdmin, async (req, res) => {
+    try {
+      const templateData = req.body;
+      const template = await storage.createTemplate(templateData);
+      res.json(template);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/admin/templates/:templateId", authenticateToken, isAdmin, async (req, res) => {
+    try {
+      const { templateId } = req.params;
+      const templateData = req.body;
+      const template = await storage.updateTemplate(templateId, templateData);
+      res.json(template);
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/admin/templates/:templateId", authenticateToken, isAdmin, async (req, res) => {
+    try {
+      const { templateId } = req.params;
+      await storage.deleteTemplate(templateId);
+      res.json({ message: "Template deleted successfully" });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

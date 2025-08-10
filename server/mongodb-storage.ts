@@ -20,6 +20,14 @@ export interface IMongoStorage {
   verifyToken(token: string): Promise<User | null>;
   requestPasswordReset(email: string): Promise<{ message: string }>;
   resetPassword(token: string, newPassword: string): Promise<{ message: string }>;
+  
+  // Admin methods
+  getAdminStats(): Promise<any>;
+  getAllUsers(): Promise<User[]>;
+  updateUserCredits(userId: string, credits: number): Promise<User>;
+  createTemplate(templateData: any): Promise<any>;
+  updateTemplate(templateId: string, templateData: any): Promise<any>;
+  deleteTemplate(templateId: string): Promise<void>;
 
   // Postcards
   createPostcard(postcard: InsertPostcard): Promise<Postcard>;
@@ -222,6 +230,134 @@ export class MongoStorage implements IMongoStorage {
         throw error;
       }
       throw new Error("Failed to reset password");
+    }
+  }
+
+  // Admin methods
+  async getAdminStats(): Promise<any> {
+    try {
+      const totalUsers = await this.users.countDocuments();
+      const totalPostcards = await this.postcards.countDocuments();
+      const totalTemplates = await this.templates.countDocuments();
+      const totalEvents = await this.events.countDocuments();
+      const totalLocations = await this.locations.countDocuments();
+
+      // Calculate revenue (mock data for demo)
+      const revenueThisMonth = 1247.50;
+      const activeUsers = Math.floor(totalUsers * 0.65);
+
+      return {
+        totalUsers,
+        totalPostcards,
+        totalTemplates,
+        totalEvents,
+        totalLocations,
+        revenueThisMonth,
+        activeUsers,
+        popularTemplates: []
+      };
+    } catch (error) {
+      throw new Error("Failed to get admin stats");
+    }
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    try {
+      const users = await this.users.find({}, { 
+        projection: { passwordHash: 0, resetToken: 0 } 
+      }).toArray();
+      
+      return users.map(user => ({
+        ...user,
+        _id: user._id.toString()
+      })) as User[];
+    } catch (error) {
+      throw new Error("Failed to get all users");
+    }
+  }
+
+  async updateUserCredits(userId: string, credits: number): Promise<User> {
+    try {
+      const result = await this.users.findOneAndUpdate(
+        { _id: new ObjectId(userId) },
+        { 
+          $set: { 
+            credits: credits.toString(), 
+            updatedAt: new Date() 
+          } 
+        },
+        { returnDocument: 'after' }
+      );
+
+      if (!result) {
+        throw new Error("User not found");
+      }
+
+      return {
+        ...result,
+        _id: result._id.toString(),
+        passwordHash: undefined,
+        resetToken: undefined
+      } as User;
+    } catch (error) {
+      throw new Error("Failed to update user credits");
+    }
+  }
+
+  async createTemplate(templateData: any): Promise<any> {
+    try {
+      // Check if template ID already exists
+      const existing = await this.templates.findOne({ id: templateData.id });
+      if (existing) {
+        throw new Error("Template with this ID already exists");
+      }
+
+      const newTemplate = {
+        ...templateData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        usageCount: 0
+      };
+
+      const result = await this.templates.insertOne(newTemplate);
+      return { ...newTemplate, _id: result.insertedId.toString() };
+    } catch (error) {
+      throw new Error("Failed to create template");
+    }
+  }
+
+  async updateTemplate(templateId: string, templateData: any): Promise<any> {
+    try {
+      const result = await this.templates.findOneAndUpdate(
+        { id: templateId },
+        { 
+          $set: { 
+            ...templateData,
+            updatedAt: new Date() 
+          } 
+        },
+        { returnDocument: 'after' }
+      );
+
+      if (!result) {
+        throw new Error("Template not found");
+      }
+
+      return { ...result, _id: result._id.toString() };
+    } catch (error) {
+      throw new Error("Failed to update template");
+    }
+  }
+
+  async deleteTemplate(templateId: string): Promise<void> {
+    try {
+      const result = await this.templates.deleteOne({ id: templateId });
+      
+      if (result.deletedCount === 0) {
+        throw new Error("Template not found");
+      }
+    } catch (error) {
+      throw new Error("Failed to delete template");
     }
   }
 
