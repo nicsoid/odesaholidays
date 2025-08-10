@@ -43,7 +43,7 @@ export default function Navigation() {
                 <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Dashboard</span>
               </Link>
             )}
-            {isAuthenticated && (user?.email?.includes("admin") || user?._id === "6839cd39c5de6bc3b492e772") && (
+            {isAuthenticated && user?.email === "admin@odesa.holiday" && (
               <Link href="/admin">
                 <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Admin</span>
               </Link>
