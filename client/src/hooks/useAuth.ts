@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 
 interface AuthUser {
   _id: string;
@@ -24,10 +24,15 @@ export function useAuth() {
     logout: async () => {
       try {
         await apiRequest("POST", "/api/auth/logout");
-        window.location.href = "/";
       } catch (error) {
-        // If logout fails, still redirect to home
-        window.location.href = "/";
+        // Continue with logout even if server call fails
+      } finally {
+        // Clear token from localStorage
+        localStorage.removeItem("auth_token");
+        // Clear all React Query cache
+        queryClient.clear();
+        // Force reload to clear any cached state
+        window.location.reload();
       }
     }
   };

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 import type { Template } from "@shared/schema";
 
 interface TemplateGalleryProps {
@@ -12,6 +13,7 @@ interface TemplateGalleryProps {
 
 export default function TemplateGallery({ templates, showFilters = true, onTemplateSelect }: TemplateGalleryProps) {
   const [activeFilter, setActiveFilter] = useState("all");
+  const sounds = useSoundEffects();
 
   const categories = [
     { id: "all", label: "All Templates" },
@@ -26,6 +28,7 @@ export default function TemplateGallery({ templates, showFilters = true, onTempl
     : templates.filter(template => template.category === activeFilter);
 
   const handleTemplateClick = (template: Template) => {
+    sounds.templateSelect();
     if (onTemplateSelect) {
       onTemplateSelect(template);
     }
@@ -55,6 +58,7 @@ export default function TemplateGallery({ templates, showFilters = true, onTempl
           <Card 
             key={template.id} 
             className="group cursor-pointer transform hover:scale-105 transition-all duration-300 overflow-hidden"
+            onMouseEnter={() => sounds.templateHover()}
             onClick={() => handleTemplateClick(template)}
           >
             <div className="relative">

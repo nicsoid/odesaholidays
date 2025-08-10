@@ -43,6 +43,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ user: { ...req.user, passwordHash: undefined } });
   });
 
+  app.post("/api/auth/logout", async (req, res) => {
+    // Since we're using JWT tokens, we just need to respond successfully
+    // The client will clear the token from localStorage
+    res.json({ message: "Logged out successfully" });
+  });
+
   app.post("/api/auth/forgot-password", async (req, res) => {
     try {
       const { email } = req.body;

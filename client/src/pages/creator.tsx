@@ -14,6 +14,15 @@ import SocialShare from "@/components/social-share";
 import AIRecommendations from "@/components/ai-recommendations";
 import SocialMediaPreview from "@/components/social-media-preview";
 import { apiRequest } from "@/lib/queryClient";
+import { 
+  InteractiveButton, 
+  InteractiveColorPicker, 
+  InteractiveFontSelector,
+  DraggableElement,
+  FloatingNotification,
+  InteractiveLoadingSpinner 
+} from "@/components/micro-interactions";
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 import type { Template, Postcard, InsertPostcard } from "@shared/schema";
 
 export default function Creator() {
@@ -34,6 +43,11 @@ export default function Creator() {
   const [currentPostcard, setCurrentPostcard] = useState<Postcard | null>(null);
   const [userEmail, setUserEmail] = useState("");
   const [showEmailPrompt, setShowEmailPrompt] = useState(false);
+  const [notification, setNotification] = useState<{message: string, type: 'success' | 'error' | 'info', isVisible: boolean}>({
+    message: '', type: 'info', isVisible: false
+  });
+  
+  const sounds = useSoundEffects();
 
   const { data: templates = [] } = useQuery<Template[]>({
     queryKey: ["/api/templates"],
@@ -57,12 +71,18 @@ export default function Creator() {
     onSuccess: (newPostcard: Postcard) => {
       setCurrentPostcard(newPostcard);
       queryClient.invalidateQueries({ queryKey: ["/api/postcards"] });
+      sounds.success();
+      setNotification({ message: 'Postcard created successfully!', type: 'success', isVisible: true });
+      setTimeout(() => setNotification(prev => ({ ...prev, isVisible: false })), 3000);
       toast({
         title: "Postcard Created!",
         description: "Your beautiful postcard is ready to share.",
       });
     },
     onError: (error: any) => {
+      sounds.error();
+      setNotification({ message: 'Failed to create postcard', type: 'error', isVisible: true });
+      setTimeout(() => setNotification(prev => ({ ...prev, isVisible: false })), 3000);
       toast({
         title: "Creation Failed",
         description: error.message || "Failed to create postcard",
@@ -79,6 +99,7 @@ export default function Creator() {
     onSuccess: () => {
       // Generate and download the postcard image
       downloadPostcardImage();
+      sounds.success();
       toast({
         title: "Download Complete",
         description: "Your postcard has been downloaded.",
@@ -391,13 +412,15 @@ export default function Creator() {
                   </div>
                   
                   {!currentPostcard && (
-                    <Button 
+                    <InteractiveButton 
                       onClick={() => handleCreatePostcard()}
                       disabled={createPostcardMutation.isPending}
-                      className="w-full bg-ukrainian-blue hover:bg-blue-700"
+                      className="w-full"
+                      variant="primary"
+                      soundEffect="success"
                     >
                       {createPostcardMutation.isPending ? "Creating..." : "Create Postcard"}
-                    </Button>
+                    </InteractiveButton>
                   )}
                 </div>
               </div>
@@ -408,22 +431,24 @@ export default function Creator() {
               <div>
                 <h3 className="font-playfair text-xl font-bold mb-4">Preview</h3>
                 <div className="bg-white p-6 rounded-lg shadow-lg">
-                  <PostcardCanvas 
-                    template={selectedTemplate}
-                    postcardData={{
-                      title: postcardData.title || undefined,
-                      message: postcardData.message || undefined,
-                      fontFamily: postcardData.fontFamily || undefined,
-                      backgroundColor: postcardData.backgroundColor || undefined,
-                      textColor: postcardData.textColor || undefined,
-                      customImageUrl: postcardData.customImageUrl || undefined,
-                    }}
-                    className="w-full max-w-md mx-auto"
-                  />
+                  {selectedTemplate && (
+                    <PostcardCanvas 
+                      template={selectedTemplate}
+                      postcardData={{
+                        title: postcardData.title || undefined,
+                        message: postcardData.message || undefined,
+                        fontFamily: postcardData.fontFamily || undefined,
+                        backgroundColor: postcardData.backgroundColor || undefined,
+                        textColor: postcardData.textColor || undefined,
+                        customImageUrl: postcardData.customImageUrl || undefined,
+                      }}
+                      className="w-full max-w-md mx-auto"
+                    />
+                  )}
                 </div>
               </div>
 
-              {currentPostcard && (
+              {currentPostcard && selectedTemplate && (
                 <div className="space-y-4">
                   <SocialShare postcard={currentPostcard} />
                   
@@ -436,22 +461,23 @@ export default function Creator() {
                   />
                   
                   <div className="flex gap-2">
-                    <Button
-                      variant="outline"
+                    <InteractiveButton
+                      variant="secondary"
                       onClick={handleDownload}
                       disabled={downloadMutation.isPending}
                       className="flex-1"
                     >
                       <Download className="h-4 w-4 mr-2" />
                       Download Free
-                    </Button>
-                    <Button
+                    </InteractiveButton>
+                    <InteractiveButton
                       onClick={handleOrderPrint}
-                      className="flex-1 bg-ukrainian-blue hover:bg-blue-700"
+                      className="flex-1"
+                      variant="primary"
                     >
                       <ShoppingCart className="h-4 w-4 mr-2" />
                       Order Print ($3.99)
-                    </Button>
+                    </InteractiveButton>
                   </div>
                 </div>
               )}
@@ -459,6 +485,13 @@ export default function Creator() {
           </div>
         )}
       </div>
+      
+      <FloatingNotification
+        message={notification.message}
+        type={notification.type}
+        isVisible={notification.isVisible}
+        onClose={() => setNotification(prev => ({ ...prev, isVisible: false }))}
+      />
     </div>
   );
 }
