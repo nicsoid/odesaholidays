@@ -25,6 +25,7 @@ export interface IMongoStorage {
   getAdminStats(): Promise<any>;
   getAllUsers(): Promise<User[]>;
   updateUserCredits(userId: string, credits: number): Promise<User>;
+  deleteUserByEmail(email: string): Promise<void>;
   createTemplate(templateData: any): Promise<any>;
   updateTemplate(templateId: string, templateData: any): Promise<any>;
   deleteTemplate(templateId: string): Promise<void>;
@@ -271,6 +272,32 @@ export class MongoStorage implements IMongoStorage {
         ...user,
         _id: user._id.toString()
       })) as User[];
+    } catch (error) {
+      throw new Error("Failed to get users");
+    }
+  }
+
+  async deleteUserByEmail(email: string): Promise<void> {
+    try {
+      await this.users.deleteOne({ email });
+    } catch (error) {
+      throw new Error("Failed to delete user");
+    }
+  }
+
+  async updateUserCredits(userId: string, credits: number): Promise<User> {
+    try {
+      const result = await this.users.findOneAndUpdate(
+        { _id: new ObjectId(userId) },
+        { $set: { credits, updatedAt: new Date() } },
+        { returnDocument: 'after' }
+      );
+      
+      if (!result.value) {
+        throw new Error("User not found");
+      }
+      
+      return { ...result.value, _id: result.value._id.toString() } as User;
     } catch (error) {
       throw new Error("Failed to get all users");
     }

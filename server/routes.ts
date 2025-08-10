@@ -191,24 +191,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/admin/users", authenticateToken, async (req: any, res) => {
     try {
-      const isAdmin = req.user.email?.includes("admin") || req.user._id === "6839cd39c5de6bc3b492e772";
+      const isAdmin = req.user.email === "admin@odesa.holiday";
       
       if (!isAdmin) {
         return res.status(403).json({ message: "Admin access required" });
       }
 
-      // For demo purposes, return sample users including current user
-      const users = [
-        {
-          _id: req.user._id,
-          email: req.user.email,
-          credits: req.user.credits || 100,
-          isAdmin: true,
-          createdAt: req.user.createdAt || new Date().toISOString(),
-        }
-      ];
-
+      const users = await mongoStorage.getAllUsers();
       res.json(users);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/admin/users/:email", authenticateToken, async (req: any, res) => {
+    try {
+      const isAdmin = req.user.email === "admin@odesa.holiday";
+      
+      if (!isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { email } = req.params;
+      await mongoStorage.deleteUserByEmail(email);
+      res.json({ message: "User deleted successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/admin/users/:id/credits", authenticateToken, async (req: any, res) => {
+    try {
+      const isAdmin = req.user.email === "admin@odesa.holiday";
+      
+      if (!isAdmin) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const { id } = req.params;
+      const { credits } = req.body;
+      await mongoStorage.updateUserCredits(id, credits);
+      res.json({ message: "Credits updated successfully" });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
@@ -463,11 +486,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(401).json({ message: "Authentication required" });
     }
     
-    // Check if user is admin (only favt@i.ua)
+    // Check if user is admin (only admin@odesa.holiday)
     const user = req.user;
-    const userEmail = user?.claims?.sub === 'favt@i.ua' ? 'favt@i.ua' : user?.email;
+    const userEmail = user?.claims?.sub === 'admin@odesa.holiday' ? 'admin@odesa.holiday' : user?.email;
     
-    if (userEmail !== 'favt@i.ua') {
+    if (userEmail !== 'admin@odesa.holiday') {
       return res.status(403).json({ message: "Admin access required" });
     }
     next();

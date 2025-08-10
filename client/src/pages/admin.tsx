@@ -27,8 +27,8 @@ export default function Admin() {
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
 
-  // Admin check - only favt@i.ua has admin access
-  const isAdmin = user?.email === "favt@i.ua";
+  // Admin check - only admin@odesa.holiday has admin access
+  const isAdmin = user?.email === "admin@odesa.holiday";
 
   useEffect(() => {
     if (!isAuthenticated) {
