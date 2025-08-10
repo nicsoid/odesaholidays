@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
 import { 
   Mail, 
   Sparkles, 
@@ -27,9 +28,16 @@ import type { Template, Postcard } from "@shared/schema";
 
 export default function Home() {
   const [, setLocation] = useLocation();
+  const { isAuthenticated } = useAuth();
   
   const { data: templates = [] } = useQuery<Template[]>({
     queryKey: ["/api/templates"],
+  });
+
+  // Check if user has completed onboarding
+  const { data: userPreferences } = useQuery({
+    queryKey: ["/api/user/preferences"],
+    enabled: isAuthenticated,
   });
 
   // Handle scrolling to hash sections when navigating from other pages
@@ -69,12 +77,21 @@ export default function Home() {
                 Design stunning digital postcards featuring Odesa's iconic landmarks. Share memories, spread joy, and order premium printed versions.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <Link href="/creator">
-                  <Button size="lg" className="bg-sunflower text-gray-900 hover:bg-yellow-400 text-lg px-8 py-4 h-auto shadow-lg transform hover:scale-105 transition-all">
-                    <Sparkles className="mr-2 h-5 w-5" />
-                    Create Free Postcard
-                  </Button>
-                </Link>
+                {isAuthenticated && userPreferences && !(userPreferences as any)?.completedOnboarding ? (
+                  <Link href="/onboarding">
+                    <Button size="lg" className="bg-sunflower text-gray-900 hover:bg-yellow-400 text-lg px-8 py-4 h-auto shadow-lg transform hover:scale-105 transition-all">
+                      <Sparkles className="mr-2 h-5 w-5" />
+                      Complete Setup
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href="/creator">
+                    <Button size="lg" className="bg-sunflower text-gray-900 hover:bg-yellow-400 text-lg px-8 py-4 h-auto shadow-lg transform hover:scale-105 transition-all">
+                      <Sparkles className="mr-2 h-5 w-5" />
+                      Create Free Postcard
+                    </Button>
+                  </Link>
+                )}
                 <Button variant="outline" size="lg" className="border-2 border-yellow-300 bg-transparent text-yellow-300 hover:bg-yellow-300 hover:text-blue-700 text-lg px-8 py-4 h-auto">
                   <Play className="mr-2 h-5 w-5" />
                   Watch Demo

@@ -11,6 +11,12 @@ import type {
   Order, InsertOrder,
   SubscriptionPlan, InsertSubscriptionPlan
 } from '../shared/mongodb-schema';
+import type {
+  UserPreferences, InsertUserPreferences,
+  UserAchievement, InsertUserAchievement,
+  UserStats, InsertUserStats,
+  SocialMediaPreview, InsertSocialMediaPreview
+} from '../shared/onboarding-schema';
 
 export interface IMongoStorage {
   // Authentication
@@ -77,6 +83,22 @@ export interface IMongoStorage {
   }): Promise<User>;
   cancelUserSubscription(userId: string): Promise<User>;
   getUserSubscriptionStatus(userId: string): Promise<{ isSubscribed: boolean; plan?: SubscriptionPlan; status?: string }>;
+
+  // Onboarding & AI Features
+  createUserPreferences(preferences: InsertUserPreferences): Promise<UserPreferences>;
+  getUserPreferences(userId: string): Promise<UserPreferences | null>;
+  updateUserPreferences(userId: string, preferences: Partial<UserPreferences>): Promise<UserPreferences>;
+  
+  // Gamification
+  createUserStats(userId: string): Promise<UserStats>;
+  getUserStats(userId: string): Promise<UserStats | null>;
+  updateUserStats(userId: string, updates: Partial<UserStats>): Promise<UserStats>;
+  addUserAchievement(achievement: InsertUserAchievement): Promise<UserAchievement>;
+  getUserAchievements(userId: string): Promise<UserAchievement[]>;
+  
+  // Social Media
+  saveSocialMediaPreview(preview: InsertSocialMediaPreview): Promise<SocialMediaPreview>;
+  getSocialMediaPreviews(postcardId: string): Promise<SocialMediaPreview[]>;
 }
 
 export class MongoStorage implements IMongoStorage {
@@ -87,6 +109,10 @@ export class MongoStorage implements IMongoStorage {
   private templates!: Collection<Template>;
   private orders!: Collection<Order>;
   private subscriptionPlans!: Collection<SubscriptionPlan>;
+  private userPreferences!: Collection<UserPreferences>;
+  private userStats!: Collection<UserStats>;
+  private userAchievements!: Collection<UserAchievement>;
+  private socialMediaPreviews!: Collection<SocialMediaPreview>;
 
   constructor() {
     // Collections will be initialized later
@@ -101,6 +127,10 @@ export class MongoStorage implements IMongoStorage {
     this.templates = db.collection('templates');
     this.orders = db.collection('orders');
     this.subscriptionPlans = db.collection('subscriptionPlans');
+    this.userPreferences = db.collection('userPreferences');
+    this.userStats = db.collection('userStats');
+    this.userAchievements = db.collection('userAchievements');
+    this.socialMediaPreviews = db.collection('socialMediaPreviews');
   }
 
   // Authentication methods
@@ -718,6 +748,142 @@ export class MongoStorage implements IMongoStorage {
       };
     } catch (error) {
       throw new Error("Failed to get user subscription status");
+    }
+  }
+
+  // Onboarding & AI Features
+  async createUserPreferences(preferencesData: InsertUserPreferences): Promise<UserPreferences> {
+    try {
+      const preferences = { 
+        ...preferencesData, 
+        createdAt: new Date(), 
+        updatedAt: new Date() 
+      };
+      const result = await this.userPreferences.insertOne(preferences as UserPreferences);
+      return { ...preferences, _id: result.insertedId.toString() } as UserPreferences;
+    } catch (error) {
+      throw new Error("Failed to create user preferences");
+    }
+  }
+
+  async getUserPreferences(userId: string): Promise<UserPreferences | null> {
+    try {
+      const preferences = await this.userPreferences.findOne({ userId });
+      if (!preferences) return null;
+      return { ...preferences, _id: preferences._id.toString() } as UserPreferences;
+    } catch (error) {
+      throw new Error("Failed to get user preferences");
+    }
+  }
+
+  async updateUserPreferences(userId: string, updates: Partial<UserPreferences>): Promise<UserPreferences> {
+    try {
+      const result = await this.userPreferences.findOneAndUpdate(
+        { userId },
+        { $set: { ...updates, updatedAt: new Date() } },
+        { returnDocument: 'after' }
+      );
+      if (!result) throw new Error("User preferences not found");
+      return { ...result, _id: result._id.toString() } as UserPreferences;
+    } catch (error) {
+      throw new Error("Failed to update user preferences");
+    }
+  }
+
+  // Gamification
+  async createUserStats(userId: string): Promise<UserStats> {
+    try {
+      const stats = {
+        userId,
+        level: 1,
+        totalPoints: 0,
+        postcardsCreated: 0,
+        postcardsSent: 0,
+        landmarksVisited: [],
+        streakDays: 0,
+        badges: [],
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+      const result = await this.userStats.insertOne(stats as UserStats);
+      return { ...stats, _id: result.insertedId.toString() } as UserStats;
+    } catch (error) {
+      throw new Error("Failed to create user stats");
+    }
+  }
+
+  async getUserStats(userId: string): Promise<UserStats | null> {
+    try {
+      const stats = await this.userStats.findOne({ userId });
+      if (!stats) return null;
+      return { ...stats, _id: stats._id.toString() } as UserStats;
+    } catch (error) {
+      throw new Error("Failed to get user stats");
+    }
+  }
+
+  async updateUserStats(userId: string, updates: Partial<UserStats>): Promise<UserStats> {
+    try {
+      const result = await this.userStats.findOneAndUpdate(
+        { userId },
+        { $set: { ...updates, updatedAt: new Date() } },
+        { returnDocument: 'after' }
+      );
+      if (!result) throw new Error("User stats not found");
+      return { ...result, _id: result._id.toString() } as UserStats;
+    } catch (error) {
+      throw new Error("Failed to update user stats");
+    }
+  }
+
+  async addUserAchievement(achievementData: InsertUserAchievement): Promise<UserAchievement> {
+    try {
+      const achievement = {
+        ...achievementData,
+        unlockedAt: new Date()
+      };
+      const result = await this.userAchievements.insertOne(achievement as UserAchievement);
+      return { ...achievement, _id: result.insertedId.toString() } as UserAchievement;
+    } catch (error) {
+      throw new Error("Failed to add user achievement");
+    }
+  }
+
+  async getUserAchievements(userId: string): Promise<UserAchievement[]> {
+    try {
+      const achievements = await this.userAchievements.find({ userId }).sort({ unlockedAt: -1 }).toArray();
+      return achievements.map(achievement => ({
+        ...achievement,
+        _id: achievement._id.toString()
+      })) as UserAchievement[];
+    } catch (error) {
+      throw new Error("Failed to get user achievements");
+    }
+  }
+
+  // Social Media
+  async saveSocialMediaPreview(previewData: InsertSocialMediaPreview): Promise<SocialMediaPreview> {
+    try {
+      const preview = {
+        ...previewData,
+        generatedAt: new Date()
+      };
+      const result = await this.socialMediaPreviews.insertOne(preview as SocialMediaPreview);
+      return { ...preview, _id: result.insertedId.toString() } as SocialMediaPreview;
+    } catch (error) {
+      throw new Error("Failed to save social media preview");
+    }
+  }
+
+  async getSocialMediaPreviews(postcardId: string): Promise<SocialMediaPreview[]> {
+    try {
+      const previews = await this.socialMediaPreviews.find({ postcardId }).sort({ generatedAt: -1 }).toArray();
+      return previews.map(preview => ({
+        ...preview,
+        _id: preview._id.toString()
+      })) as SocialMediaPreview[];
+    } catch (error) {
+      throw new Error("Failed to get social media previews");
     }
   }
 }

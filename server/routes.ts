@@ -6,6 +6,8 @@ import { mongoStorage } from "./mongodb-storage";
 import { authenticateToken, optionalAuth } from "./auth-middleware";
 import { insertUserSchema, insertPostcardSchema, insertOrderSchema, insertAnalyticsSchema, insertNewsletterSubscriberSchema } from "@shared/schema";
 import { loginSchema, registerSchema, insertSubscriptionPlanSchema } from "../shared/mongodb-schema";
+import { insertUserPreferencesSchema, achievementDefinitions } from "../shared/onboarding-schema";
+import { aiService } from "./ai-service";
 import { z } from "zod";
 
 // Initialize Stripe only if keys are available
@@ -673,6 +675,185 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid plan data", errors: error.errors });
       }
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Onboarding routes
+  app.get("/api/onboarding/questions", async (req, res) => {
+    try {
+      const questions = await aiService.generateOnboardingQuestions();
+      res.json(questions);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/onboarding/complete", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const preferencesData = insertUserPreferencesSchema.parse({
+        ...req.body,
+        userId
+      });
+
+      // Create user preferences
+      const preferences = await mongoStorage.createUserPreferences(preferencesData);
+
+      // Create user stats if they don't exist
+      let userStats = await mongoStorage.getUserStats(userId);
+      if (!userStats) {
+        userStats = await mongoStorage.createUserStats(userId);
+      }
+
+      // Award first achievement
+      const firstAchievement = achievementDefinitions.find(a => a.id === 'first_postcard');
+      if (firstAchievement) {
+        await mongoStorage.addUserAchievement({
+          userId,
+          achievementId: firstAchievement.id,
+          achievementName: firstAchievement.name,
+          description: firstAchievement.description,
+          icon: firstAchievement.icon,
+          points: firstAchievement.points
+        });
+
+        // Update user stats
+        await mongoStorage.updateUserStats(userId, {
+          totalPoints: userStats.totalPoints + firstAchievement.points,
+          badges: [...userStats.badges, firstAchievement.id]
+        });
+      }
+
+      res.json({
+        preferences,
+        pointsEarned: firstAchievement?.points || 0,
+        achievement: firstAchievement
+      });
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid preferences data", errors: error.errors });
+      }
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // User preferences routes
+  app.get("/api/user/preferences", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const preferences = await mongoStorage.getUserPreferences(userId);
+      res.json(preferences);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/user/stats", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const stats = await mongoStorage.getUserStats(userId);
+      const achievements = await mongoStorage.getUserAchievements(userId);
+      res.json({ stats, achievements });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // AI-powered landmark recommendations
+  app.get("/api/ai/recommendations", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const preferences = await mongoStorage.getUserPreferences(userId);
+      
+      if (!preferences || !preferences.completedOnboarding) {
+        return res.status(400).json({ message: "Complete onboarding first" });
+      }
+
+      const userHistory = await mongoStorage.getUserStats(userId);
+      const recommendations = await aiService.getPersonalizedLandmarkRecommendations(
+        {
+          interests: preferences.interests,
+          previousVisits: [],
+          travelStyle: preferences.travelStyle,
+          preferredActivities: preferences.preferredActivities,
+          timeOfYear: preferences.timeOfYear
+        },
+        userHistory?.landmarksVisited || []
+      );
+
+      res.json(recommendations);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/ai/recommendations/refresh", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const preferences = await mongoStorage.getUserPreferences(userId);
+      
+      if (!preferences) {
+        return res.status(400).json({ message: "User preferences not found" });
+      }
+
+      const userHistory = await mongoStorage.getUserStats(userId);
+      const recommendations = await aiService.getPersonalizedLandmarkRecommendations(
+        {
+          interests: preferences.interests,
+          previousVisits: [],
+          travelStyle: preferences.travelStyle,
+          preferredActivities: preferences.preferredActivities,
+          timeOfYear: preferences.timeOfYear
+        },
+        userHistory?.landmarksVisited || []
+      );
+
+      res.json({ recommendations });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Social media preview routes
+  app.post("/api/social-media/generate", authenticateToken, async (req: any, res) => {
+    try {
+      const { postcardId, templateName, message, landmark, mood } = req.body;
+
+      if (!postcardId || !templateName || !message || !landmark) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const captions = await aiService.generateSocialMediaCaption({
+        templateName,
+        message,
+        landmark,
+        mood: mood || 'excited'
+      });
+
+      // Save social media previews
+      const platforms = ['instagram', 'twitter', 'facebook'] as const;
+      for (const platform of platforms) {
+        await mongoStorage.saveSocialMediaPreview({
+          postcardId,
+          platform,
+          caption: captions[platform],
+          hashtags: captions.hashtags
+        });
+      }
+
+      res.json(captions);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/social-media/previews/:postcardId", authenticateToken, async (req, res) => {
+    try {
+      const { postcardId } = req.params;
+      const previews = await mongoStorage.getSocialMediaPreviews(postcardId);
+      res.json(previews);
+    } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });

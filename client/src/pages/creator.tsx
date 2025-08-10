@@ -11,6 +11,8 @@ import { useToast } from "@/hooks/use-toast";
 import TemplateGallery from "@/components/template-gallery";
 import PostcardCanvas from "@/components/postcard-canvas";
 import SocialShare from "@/components/social-share";
+import AIRecommendations from "@/components/ai-recommendations";
+import SocialMediaPreview from "@/components/social-media-preview";
 import { apiRequest } from "@/lib/queryClient";
 import type { Template, Postcard, InsertPostcard } from "@shared/schema";
 
@@ -273,13 +275,18 @@ export default function Creator() {
         </div>
 
         {!selectedTemplate ? (
-          <div className="mb-8">
-            <h2 className="font-playfair text-2xl font-bold mb-6">Choose Your Template</h2>
-            <TemplateGallery 
-              templates={templates} 
-              showFilters={true}
-              onTemplateSelect={handleTemplateSelect}
-            />
+          <div className="grid lg:grid-cols-3 gap-8 mb-8">
+            <div className="lg:col-span-2">
+              <h2 className="font-playfair text-2xl font-bold mb-6">Choose Your Template</h2>
+              <TemplateGallery 
+                templates={templates} 
+                showFilters={true}
+                onTemplateSelect={handleTemplateSelect}
+              />
+            </div>
+            <div>
+              <AIRecommendations />
+            </div>
           </div>
         ) : (
           <div className="grid lg:grid-cols-2 gap-8">
@@ -385,7 +392,7 @@ export default function Creator() {
                   
                   {!currentPostcard && (
                     <Button 
-                      onClick={handleCreatePostcard}
+                      onClick={() => handleCreatePostcard()}
                       disabled={createPostcardMutation.isPending}
                       className="w-full bg-ukrainian-blue hover:bg-blue-700"
                     >
@@ -419,6 +426,14 @@ export default function Creator() {
               {currentPostcard && (
                 <div className="space-y-4">
                   <SocialShare postcard={currentPostcard} />
+                  
+                  <SocialMediaPreview
+                    postcardId={currentPostcard.id.toString()}
+                    templateName={selectedTemplate.name}
+                    message={currentPostcard.message}
+                    landmark={selectedTemplate.name}
+                    imageUrl={selectedTemplate.imageUrl}
+                  />
                   
                   <div className="flex gap-2">
                     <Button
