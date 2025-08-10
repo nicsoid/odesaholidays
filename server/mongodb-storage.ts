@@ -164,10 +164,15 @@ export class MongoStorage implements IMongoStorage {
         }
       );
 
-      // In a real application, you would send an email here
-      // For now, we'll log the reset link (in production, this should be sent via email)
+      // Send password reset email
+      const { EmailService } = await import('./email-service');
+      const emailSent = await EmailService.sendPasswordResetEmail(email, resetToken);
+      
+      // Always log the reset link for development/testing
       const resetLink = `${process.env.CLIENT_URL || 'http://localhost:5000'}/reset-password?token=${resetToken}`;
-      console.log(`Password reset link for ${email}: ${resetLink}`);
+      console.log(`\n🔑 Password Reset Link for ${email}:`);
+      console.log(`🔗 ${resetLink}`);
+      console.log(`⏰ Link expires in 1 hour\n`);
 
       return { message: "Password reset email sent if account exists" };
     } catch (error) {
