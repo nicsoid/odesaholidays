@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
-import Navigation from "@/components/navigation";
 import UserManagement from "@/components/admin/UserManagement";
 import TemplateManagement from "@/components/admin/TemplateManagement";
 import { useToast } from "@/hooks/use-toast";
@@ -70,7 +69,6 @@ export default function Admin() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900">
-      <Navigation />
       <div className="container mx-auto py-8">
         {/* Header */}
         <div className="mb-8">
