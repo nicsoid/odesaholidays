@@ -175,13 +175,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Get actual stats from database
-      const stats = {
-        totalUsers: 156, // This would come from actual user count
-        totalPostcards: 1247, // This would come from actual postcard count
-        totalTemplates: await mongoStorage.getTemplates().then(t => t.length),
-        totalEvents: await mongoStorage.getEvents().then(e => e.length),
-        totalLocations: await mongoStorage.getLocations().then(l => l.length),
-      };
+      const stats = await mongoStorage.getAdminStats();
 
       res.json(stats);
     } catch (error: any) {

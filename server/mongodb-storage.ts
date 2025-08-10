@@ -24,6 +24,8 @@ export interface IMongoStorage {
   // Admin methods
   getAdminStats(): Promise<any>;
   getAllUsers(): Promise<User[]>;
+  getUserCount(): Promise<number>;
+  getPostcardCount(): Promise<number>;
   updateUserCredits(userId: string, credits: number): Promise<User>;
   deleteUserByEmail(email: string): Promise<void>;
   createTemplate(templateData: any): Promise<any>;
@@ -259,6 +261,22 @@ export class MongoStorage implements IMongoStorage {
       };
     } catch (error) {
       throw new Error("Failed to get admin stats");
+    }
+  }
+
+  async getUserCount(): Promise<number> {
+    try {
+      return await this.users.countDocuments();
+    } catch (error) {
+      throw new Error("Failed to get user count");
+    }
+  }
+
+  async getPostcardCount(): Promise<number> {
+    try {
+      return await this.postcards.countDocuments();
+    } catch (error) {
+      throw new Error("Failed to get postcard count");
     }
   }
 
