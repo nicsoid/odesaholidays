@@ -476,13 +476,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Admin routes - protected by admin middleware
   const isAdmin = (req: any, res: any, next: any) => {
-    if (!req.isAuthenticated()) {
+    if (!req.user) {
       return res.status(401).json({ message: "Authentication required" });
     }
     
     // Check if user is admin (only admin@odesa.holiday)
     const user = req.user;
-    const userEmail = user?.claims?.sub === 'admin@odesa.holiday' ? 'admin@odesa.holiday' : user?.email;
+    const userEmail = user.email;
     
     if (userEmail !== 'admin@odesa.holiday') {
       return res.status(403).json({ message: "Admin access required" });
