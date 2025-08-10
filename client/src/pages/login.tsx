@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ import { Mail, Lock, ArrowLeft } from "lucide-react";
 export default function Login() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -25,6 +26,10 @@ export default function Login() {
     onSuccess: (data) => {
       localStorage.setItem("auth_token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
+      
+      // Invalidate auth queries to refresh the user state
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
+      
       toast({
         title: "Welcome back!",
         description: "You've been successfully logged in.",

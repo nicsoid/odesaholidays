@@ -39,13 +39,7 @@ export default function AIRecommendations() {
     retry: 2,
   });
 
-  // Debug: log the userPreferences to see what we're getting
-  console.log('AI Recommendations Debug:', { 
-    userPreferences, 
-    completedOnboarding: userPreferences?.completedOnboarding,
-    recommendations,
-    error
-  });
+
 
   // Refresh recommendations mutation
   const refreshRecommendationsMutation = useMutation({
@@ -263,14 +257,14 @@ export default function AIRecommendations() {
                     </div>
 
                     {/* Nearby attractions */}
-                    {rec.nearbyAttractions.length > 0 && (
+                    {rec.nearbyAttractions && rec.nearbyAttractions.length > 0 && (
                       <div>
                         <div className="flex items-center gap-2 mb-2">
                           <MapPin className="h-4 w-4 text-gray-500" />
                           <span className="font-medium text-sm">Nearby:</span>
                         </div>
                         <div className="flex flex-wrap gap-1 ml-6">
-                          {rec.nearbyAttractions.map((attraction, i) => (
+                          {(rec.nearbyAttractions || []).map((attraction, i) => (
                             <Badge key={i} variant="outline" className="text-xs">
                               {attraction}
                             </Badge>
