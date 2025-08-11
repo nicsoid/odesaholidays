@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a full-stack web application for creating, customizing, and sharing digital postcards featuring Odesa, Ukraine. The application allows users to create personalized postcards using templates of local landmarks, coastal views, and historic sites. Users can customize text, fonts, colors, and share their creations via social media or order physical prints. The platform includes user authentication, template management, event/location discovery, and e-commerce functionality for postcard printing services.
+This is a full-stack web application for creating, customizing, and sharing digital postcards featuring Odesa, Ukraine. The application allows users to create personalized postcards using templates of local landmarks, coastal views, and historic sites. Users can customize text, fonts, colors, and share their creations via social media or order physical prints. The platform includes user authentication, template management, event/location discovery, AI-powered recommendations, comprehensive internationalization (Ukrainian/English), and e-commerce functionality for postcard printing services.
 
 ## User Preferences
 
@@ -50,3 +50,10 @@ Preferred communication style: Simple, everyday language.
 - **Development Tools**: Replit-specific tooling for cloud development environment
 
 The application follows a monorepo structure with shared TypeScript schemas between frontend and backend, ensuring type safety across the full stack. The architecture supports both development and production environments with appropriate fallbacks and configuration options.
+
+### Recent Changes (January 2025)
+- **Internationalization System**: Implemented comprehensive Ukrainian/English language support with browser detection, localStorage persistence, and translation framework
+- **UX Improvement**: Fixed postcard creator to skip email prompt for authenticated users, improving user experience for logged-in customers
+- **Language Switcher**: Added flag-based language toggle in navigation with Ukrainian as default language
+- **AI Integration**: Enhanced AI recommendations with proper navigation and fixed infinite loop issues
+- **Translation Coverage**: Navigation, AI recommendations, authentication flows, and core UI components fully translated

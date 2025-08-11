@@ -23,6 +23,7 @@ import {
   InteractiveLoadingSpinner 
 } from "@/components/micro-interactions";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
+import { useAuth } from "@/hooks/useAuth";
 import type { Template, Postcard, InsertPostcard } from "@shared/schema";
 
 export default function Creator() {
@@ -30,6 +31,7 @@ export default function Creator() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { isAuthenticated, user } = useAuth();
   
   // Get URL parameters for landmark suggestions
   const urlParams = new URLSearchParams(window.location.search);
@@ -185,7 +187,7 @@ export default function Creator() {
       ) || templates[0]; // Fallback to first template if no match
       
       setSelectedTemplate(matchingTemplate);
-      sounds?.select?.();
+      sounds?.templateSelect?.();
       
       // Load relevant images for the landmark - only once
       fetchLandmarkImages(landmarkParam);
@@ -232,7 +234,8 @@ export default function Creator() {
       return;
     }
 
-    if (!userEmail && !currentPostcard && !skipEmailPrompt) {
+    // Skip email prompt if user is authenticated or has already provided email or chooses to skip
+    if (!isAuthenticated && !userEmail && !currentPostcard && !skipEmailPrompt) {
       setShowEmailPrompt(true);
       return;
     }
@@ -240,7 +243,7 @@ export default function Creator() {
     createPostcardMutation.mutate({
       ...postcardData as InsertPostcard,
       templateId: selectedTemplate.id,
-      userId: 1, // In a real app, this would come from authentication
+      userId: isAuthenticated ? (typeof user?._id === 'string' ? parseInt(user._id) : 1) : 1, // Use authenticated user ID or fallback
     });
   };
 
