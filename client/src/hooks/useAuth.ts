@@ -1,39 +1,67 @@
-import { useQuery } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import type { User } from '@shared/mongodb-schema';
 
-interface AuthUser {
-  _id: string;
-  email: string;
-  role?: string;
-  createdAt: Date;
-  // Add any other user properties from your schema
+interface AuthContextType {
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  user: User | null;
+  login: (credentials: { email: string; password: string }) => Promise<void>;
+  logout: () => void;
 }
 
-export function useAuth() {
-  const { data: authData, isLoading, error } = useQuery({
-    queryKey: ["/api/auth/me"],
+const TOKEN_STORAGE_KEY = 'odesa_auth_token';
+
+export function useAuth(): AuthContextType {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Get current user
+  const { data: user, isLoading } = useQuery<{ user: User }>({
+    queryKey: ['/api/auth/me'],
     retry: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: !!localStorage.getItem(TOKEN_STORAGE_KEY),
   });
 
-  return {
-    user: (authData as any)?.user as AuthUser | undefined,
-    isLoading,
-    isAuthenticated: !!(authData as any)?.user,
-    error,
-    logout: async () => {
-      try {
-        await apiRequest("POST", "/api/auth/logout");
-      } catch (error) {
-        // Continue with logout even if server call fails
-      } finally {
-        // Clear token from localStorage
-        localStorage.removeItem("auth_token");
-        // Clear all React Query cache
-        queryClient.clear();
-        // Force reload to clear any cached state
-        window.location.reload();
+  // Login mutation
+  const loginMutation = useMutation({
+    mutationFn: async (credentials: { email: string; password: string }) => {
+      const response = await apiRequest('POST', '/api/auth/login', credentials);
+      return response.json();
+    },
+    onSuccess: (data) => {
+      localStorage.setItem(TOKEN_STORAGE_KEY, data.token);
+      setIsAuthenticated(true);
+      // Invalidate and refetch user data
+      queryClient.invalidateQueries({ queryKey: ['/api/auth/me'] });
+    },
+  });
+
+  const logout = () => {
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    setIsAuthenticated(false);
+    queryClient.clear();
+    window.location.href = '/';
+  };
+
+  // Update authentication state based on user data
+  useEffect(() => {
+    if (user?.user) {
+      setIsAuthenticated(true);
+    } else if (!isLoading && !user) {
+      setIsAuthenticated(false);
+      // Clean up invalid token
+      if (localStorage.getItem(TOKEN_STORAGE_KEY)) {
+        localStorage.removeItem(TOKEN_STORAGE_KEY);
       }
     }
+  }, [user, isLoading]);
+
+  return {
+    isAuthenticated,
+    isLoading,
+    user: user?.user || null,
+    login: loginMutation.mutateAsync,
+    logout,
   };
 }

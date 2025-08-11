@@ -99,6 +99,12 @@ export interface IMongoStorage {
   // Social Media
   saveSocialMediaPreview(preview: InsertSocialMediaPreview): Promise<SocialMediaPreview>;
   getSocialMediaPreviews(postcardId: string): Promise<SocialMediaPreview[]>;
+
+  // Travel Stories
+  createTravelStory(storyData: any): Promise<any>;
+  getUserTravelStories(userId: string): Promise<any[]>;
+  getUserStoryPreferences(userId: string): Promise<any>;
+  createOrUpdateStoryPreferences(preferencesData: any): Promise<any>;
 }
 
 export class MongoStorage implements IMongoStorage {
@@ -113,6 +119,8 @@ export class MongoStorage implements IMongoStorage {
   private userStats!: Collection<UserStats>;
   private userAchievements!: Collection<UserAchievement>;
   private socialMediaPreviews!: Collection<SocialMediaPreview>;
+  private travelStories!: Collection<any>;
+  private storyPreferences!: Collection<any>;
 
   constructor() {
     // Collections will be initialized later
@@ -131,6 +139,8 @@ export class MongoStorage implements IMongoStorage {
     this.userStats = db.collection('userStats');
     this.userAchievements = db.collection('userAchievements');
     this.socialMediaPreviews = db.collection('socialMediaPreviews');
+    this.travelStories = db.collection('travelStories');
+    this.storyPreferences = db.collection('storyPreferences');
   }
 
   // Authentication methods
@@ -884,6 +894,72 @@ export class MongoStorage implements IMongoStorage {
       })) as SocialMediaPreview[];
     } catch (error) {
       throw new Error("Failed to get social media previews");
+    }
+  }
+
+  // Travel Story Methods
+  async createTravelStory(storyData: any): Promise<any> {
+    try {
+      const story = {
+        ...storyData,
+        _id: new ObjectId(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        likesCount: 0,
+        sharesCount: 0
+      };
+
+      const result = await this.travelStories.insertOne(story);
+      return { ...story, _id: result.insertedId.toString() };
+    } catch (error) {
+      throw new Error("Failed to create travel story");
+    }
+  }
+
+  async getUserTravelStories(userId: string): Promise<any[]> {
+    try {
+      const stories = await this.travelStories
+        .find({ userId })
+        .sort({ createdAt: -1 })
+        .toArray();
+      
+      return stories.map(story => ({
+        ...story,
+        _id: story._id.toString(),
+        id: story._id.toString() // Add id field for compatibility
+      }));
+    } catch (error) {
+      throw new Error("Failed to get user travel stories");
+    }
+  }
+
+  async getUserStoryPreferences(userId: string): Promise<any> {
+    try {
+      const preferences = await this.storyPreferences.findOne({ userId });
+      if (!preferences) return null;
+      return { ...preferences, _id: preferences._id.toString() };
+    } catch (error) {
+      throw new Error("Failed to get user story preferences");
+    }
+  }
+
+  async createOrUpdateStoryPreferences(preferencesData: any): Promise<any> {
+    try {
+      const { userId } = preferencesData;
+      const updateData = {
+        ...preferencesData,
+        updatedAt: new Date()
+      };
+
+      const result = await this.storyPreferences.findOneAndUpdate(
+        { userId },
+        { $set: updateData, $setOnInsert: { createdAt: new Date() } },
+        { upsert: true, returnDocument: 'after' }
+      );
+
+      return { ...result, _id: result?._id?.toString() };
+    } catch (error) {
+      throw new Error("Failed to create or update story preferences");
     }
   }
 }

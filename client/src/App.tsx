@@ -17,6 +17,7 @@ import PostcardView from "@/pages/postcard-view";
 import Admin from "@/pages/admin";
 import Subscription from "@/pages/subscription";
 import Onboarding from "@/pages/onboarding";
+import StoryCreator from "@/pages/story-creator";
 import NotFound from "@/pages/not-found";
 import Navigation from "@/components/navigation";
 
@@ -41,6 +42,7 @@ function Router() {
         <Route path="/admin" component={Admin} />
         <Route path="/subscription" component={Subscription} />
         <Route path="/onboarding" component={Onboarding} />
+        <Route path="/story-creator" component={StoryCreator} />
         <Route path="/gallery" component={Home} />
         <Route path="/pricing" component={Home} />
         <Route component={NotFound} />

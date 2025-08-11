@@ -8,6 +8,7 @@ import { insertUserSchema, insertPostcardSchema, insertOrderSchema, insertAnalyt
 import { loginSchema, registerSchema, insertSubscriptionPlanSchema } from "../shared/mongodb-schema";
 import { insertUserPreferencesSchema, achievementDefinitions } from "../shared/onboarding-schema";
 import { aiService } from "./ai-service";
+import { aiStoryService } from "./ai-story-service";
 import { z } from "zod";
 
 // Initialize Stripe only if keys are available
@@ -895,6 +896,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const previews = await mongoStorage.getSocialMediaPreviews(postcardId);
       res.json(previews);
     } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Travel Story Generator routes
+  app.post("/api/stories/generate", authenticateToken, async (req: any, res) => {
+    try {
+      const { location, mood, style, userContext } = req.body;
+      
+      if (!location) {
+        return res.status(400).json({ message: "Location is required" });
+      }
+
+      const userId = req.user._id;
+      const preferences = await mongoStorage.getUserPreferences(userId);
+
+      const story = await aiStoryService.generateTravelStory({
+        location,
+        mood: mood || 'happy',
+        style: style || 'casual',
+        userContext,
+        preferences: preferences || undefined
+      });
+
+      res.json(story);
+    } catch (error: any) {
+      console.error('Story generation error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/stories", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const storyData = {
+        ...req.body,
+        userId: userId.toString() // Convert ObjectId to string for the integer field
+      };
+
+      // For now, store in MongoDB as a custom collection
+      // since we don't have the PostgreSQL story tables set up yet
+      const story = await mongoStorage.createTravelStory(storyData);
+      res.status(201).json(story);
+    } catch (error: any) {
+      console.error('Story save error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/stories", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const stories = await mongoStorage.getUserTravelStories(userId);
+      res.json(stories);
+    } catch (error: any) {
+      console.error('Stories fetch error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/story-preferences", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const preferences = await mongoStorage.getUserStoryPreferences(userId);
+      res.json(preferences);
+    } catch (error: any) {
+      console.error('Story preferences fetch error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/story-preferences", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const preferencesData = {
+        ...req.body,
+        userId: userId.toString()
+      };
+
+      const preferences = await mongoStorage.createOrUpdateStoryPreferences(preferencesData);
+      res.json(preferences);
+    } catch (error: any) {
+      console.error('Story preferences save error:', error);
       res.status(500).json({ message: error.message });
     }
   });

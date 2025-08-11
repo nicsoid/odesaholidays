@@ -76,6 +76,11 @@ export default function Navigation() {
                   <LogOut className="h-4 w-4 mr-2" />
                   {t('nav.logout')}
                 </Button>
+                <Link href="/story-creator">
+                  <Button variant="outline" className="border-ukrainian-blue text-ukrainian-blue hover:bg-ukrainian-blue hover:text-white">
+                    AI Stories
+                  </Button>
+                </Link>
                 <Link href="/creator">
                   <Button className="bg-ukrainian-blue hover:bg-blue-700">
                     {t('nav.creator')}
@@ -151,6 +156,11 @@ export default function Navigation() {
                     <LogOut className="h-4 w-4 mr-2" />
                     Logout
                   </Button>
+                  <Link href="/story-creator">
+                    <Button variant="outline" className="w-full border-ukrainian-blue text-ukrainian-blue hover:bg-ukrainian-blue hover:text-white">
+                      AI Stories
+                    </Button>
+                  </Link>
                   <Link href="/creator">
                     <Button className="w-full bg-ukrainian-blue hover:bg-blue-700">
                       Start Creating

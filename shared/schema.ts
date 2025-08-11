@@ -70,6 +70,38 @@ export const newsletterSubscribers = pgTable("newsletter_subscribers", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Travel Stories for Instagram
+export const travelStories = pgTable("travel_stories", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  title: text("title").notNull(),
+  story: text("story").notNull(), // AI-generated story content
+  location: text("location").notNull(), // Odesa landmark/location
+  mood: text("mood"), // happy, adventurous, romantic, cultural, etc.
+  style: text("style"), // casual, poetic, humorous, inspirational
+  userImageUrl: text("user_image_url"), // User's uploaded photo
+  instagramHashtags: text("instagram_hashtags"), // Generated hashtags
+  instagramCaption: text("instagram_caption"), // Ready-to-post caption
+  isPublic: boolean("is_public").default(false),
+  likesCount: integer("likes_count").default(0),
+  sharesCount: integer("shares_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Story Generation Preferences
+export const storyPreferences = pgTable("story_preferences", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  favoriteLocations: text("favorite_locations"), // JSON array of preferred locations
+  preferredMoods: text("preferred_moods"), // JSON array of preferred moods
+  writingStyle: text("writing_style").default("casual"), // casual, poetic, humorous, inspirational
+  includePersonalTouch: boolean("include_personal_touch").default(true),
+  preferredHashtagStyle: text("preferred_hashtag_style").default("trendy"), // trendy, classic, niche
+  maxHashtags: integer("max_hashtags").default(10),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
@@ -107,6 +139,19 @@ export const insertNewsletterSubscriberSchema = createInsertSchema(newsletterSub
   createdAt: true,
 });
 
+// Travel Story Schemas
+export const insertTravelStorySchema = createInsertSchema(travelStories).omit({
+  id: true,
+  createdAt: true,
+  likesCount: true,
+  sharesCount: true,
+});
+export const insertStoryPreferencesSchema = createInsertSchema(storyPreferences).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Postcard = typeof postcards.$inferSelect;
@@ -119,3 +164,7 @@ export type Analytics = typeof analytics.$inferSelect;
 export type InsertAnalytics = z.infer<typeof insertAnalyticsSchema>;
 export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
 export type InsertNewsletterSubscriber = z.infer<typeof insertNewsletterSubscriberSchema>;
+export type TravelStory = typeof travelStories.$inferSelect;
+export type InsertTravelStory = z.infer<typeof insertTravelStorySchema>;
+export type StoryPreferences = typeof storyPreferences.$inferSelect;
+export type InsertStoryPreferences = z.infer<typeof insertStoryPreferencesSchema>;
