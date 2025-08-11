@@ -76,7 +76,7 @@ export default function Home() {
                 {t('landing.title')}
               </h1>
               <p className="text-xl mb-8 text-blue-100 leading-relaxed">
-                Design stunning digital postcards featuring Odesa's iconic landmarks. Share memories, spread joy, and order premium printed versions.
+                {t('home.hero.subtitle')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
                 {isAuthenticated && userPreferences && !(userPreferences as any)?.completedOnboarding ? (
@@ -90,13 +90,13 @@ export default function Home() {
                   <Link href="/creator">
                     <Button size="lg" className="bg-sunflower text-gray-900 hover:bg-yellow-400 text-lg px-8 py-4 h-auto shadow-lg transform hover:scale-105 transition-all">
                       <Sparkles className="mr-2 h-5 w-5" />
-                      Create Free Postcard
+                      {t('home.hero.createButton')}
                     </Button>
                   </Link>
                 )}
                 <Button variant="outline" size="lg" className="border-2 border-yellow-300 bg-transparent text-yellow-300 hover:bg-yellow-300 hover:text-blue-700 text-lg px-8 py-4 h-auto">
                   <Play className="mr-2 h-5 w-5" />
-                  Watch Demo
+                  {t('home.hero.watchDemo')}
                 </Button>
               </div>
               <div className="flex items-center text-blue-100">
@@ -135,10 +135,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="font-playfair text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Everything You Need to Create Amazing Postcards
+              {t('home.features.title')}
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              From free digital creation to premium printing, we've got all your postcard needs covered.
+              {t('home.features.subtitle')}
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -147,8 +147,8 @@ export default function Home() {
                 <div className="bg-blue-100 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
                   <Image className="text-blue-600 h-8 w-8" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">Premium Templates</h3>
-                <p className="text-gray-600">Beautiful, professionally designed templates featuring Odesa's most iconic landmarks and views.</p>
+                <h3 className="text-xl font-semibold mb-3">{t('home.features.templates.title')}</h3>
+                <p className="text-gray-600">{t('home.features.templates.description')}</p>
               </CardContent>
             </Card>
             
@@ -157,8 +157,8 @@ export default function Home() {
                 <div className="bg-blue-100 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
                   <Edit className="text-blue-600 h-8 w-8" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">Easy Customization</h3>
-                <p className="text-gray-600">Add your photos, customize text, choose fonts, and personalize every detail with our intuitive editor.</p>
+                <h3 className="text-xl font-semibold mb-3">{t('home.features.customization.title')}</h3>
+                <p className="text-gray-600">{t('home.features.customization.description')}</p>
               </CardContent>
             </Card>
             
@@ -167,8 +167,8 @@ export default function Home() {
                 <div className="bg-blue-100 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
                   <Share2 className="text-blue-600 h-8 w-8" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">Social Sharing</h3>
-                <p className="text-gray-600">Share instantly on Instagram, Facebook, Twitter, or send via email to friends and family worldwide.</p>
+                <h3 className="text-xl font-semibold mb-3">{t('home.features.sharing.title')}</h3>
+                <p className="text-gray-600">{t('home.features.sharing.description')}</p>
               </CardContent>
             </Card>
             
@@ -177,8 +177,8 @@ export default function Home() {
                 <div className="bg-blue-100 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
                   <Truck className="text-blue-600 h-8 w-8" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">Print & Ship</h3>
-                <p className="text-gray-600">Order high-quality printed postcards delivered anywhere in the world. Perfect for traditional mail.</p>
+                <h3 className="text-xl font-semibold mb-3">{t('home.features.printing.title')}</h3>
+                <p className="text-gray-600">{t('home.features.printing.description')}</p>
               </CardContent>
             </Card>
           </div>
@@ -190,10 +190,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="font-playfair text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Discover Odesa's Beauty
+              {t('home.templates.title')}
             </h2>
             <p className="text-xl text-gray-600 mb-8">
-              Choose from our curated collection of stunning Odesa landmarks and coastal views.
+              {t('home.templates.subtitle')}
             </p>
           </div>
           <TemplateGallery 
@@ -204,7 +204,7 @@ export default function Home() {
           <div className="text-center mt-12">
             <Link href="/creator">
               <Button variant="outline" size="lg" className="text-gray-700 hover:bg-gray-200">
-                View All Templates
+                {t('home.templates.viewAll')}
               </Button>
             </Link>
           </div>
@@ -216,10 +216,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="font-playfair text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Simple, Transparent Pricing
+              {t('home.pricing.title')}
             </h2>
             <p className="text-xl text-gray-600 mb-8">
-              Start for free, upgrade when you're ready to print and ship.
+              {t('home.pricing.subtitle')}
             </p>
           </div>
           
@@ -228,31 +228,31 @@ export default function Home() {
             <Card className="border-2 border-gray-100">
               <CardContent className="p-8">
                 <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Digital Free</h3>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('plan.digitalFree')}</h3>
                   <div className="text-4xl font-bold text-gray-900 mb-2">$0</div>
-                  <p className="text-gray-600">Perfect for social sharing</p>
+                  <p className="text-gray-600">{t('home.pricing.free.description')}</p>
                 </div>
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Free digital postcards</span>
+                    <span>{t('plan.features.digitalCards')}</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>5 AI stories per month</span>
+                    <span>5 {t('plan.features.aiStories')}</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Basic templates</span>
+                    <span>{t('plan.features.templates')}</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Standard quality exports</span>
+                    <span>{t('plan.features.exports')}</span>
                   </li>
                 </ul>
                 <Link href="/creator">
                   <Button variant="outline" className="w-full">
-                    Get Started Free
+                    {t('home.pricing.getStarted')}
                   </Button>
                 </Link>
               </CardContent>
@@ -265,9 +265,9 @@ export default function Home() {
               </div>
               <CardContent className="p-8">
                 <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Print & Ship</h3>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{t('plan.printShip')}</h3>
                   <div className="text-4xl font-bold text-gray-900 mb-2">$4.99</div>
-                  <p className="text-gray-600">Per month</p>
+                  <p className="text-gray-600">{t('plan.monthly')}</p>
                 </div>
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center">

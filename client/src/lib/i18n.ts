@@ -116,6 +116,106 @@ interface TranslationKeys {
   'message.error.generic': string;
   'message.error.network': string;
   'message.unauthorized': string;
+
+  // Home Page
+  'home.hero.subtitle': string;
+  'home.hero.createButton': string;
+  'home.hero.watchDemo': string;
+  'home.features.title': string;
+  'home.features.subtitle': string;
+  'home.features.templates.title': string;
+  'home.features.templates.description': string;
+  'home.features.customization.title': string;
+  'home.features.customization.description': string;
+  'home.features.sharing.title': string;
+  'home.features.sharing.description': string;
+  'home.features.printing.title': string;
+  'home.features.printing.description': string;
+  'home.templates.title': string;
+  'home.templates.subtitle': string;
+  'home.templates.viewAll': string;
+  'home.pricing.title': string;
+  'home.pricing.subtitle': string;
+  'home.pricing.free.description': string;
+  'home.pricing.print.description': string;
+  'home.pricing.premium.description': string;
+  'home.pricing.getStarted': string;
+  'home.pricing.orderPrint': string;
+  'home.pricing.upgrade': string;
+  'home.pricing.bulk': string;
+  'home.pricing.contact': string;
+  'home.gallery.title': string;
+  'home.gallery.subtitle': string;
+  'home.stats.postcards': string;
+  'home.stats.rating': string;
+  'home.stats.countries': string;
+  'home.footer.about.title': string;
+  'home.footer.about.description': string;
+  'home.footer.links.title': string;
+  'home.footer.support.title': string;
+  'home.footer.social.title': string;
+  'home.footer.copyright': string;
+
+  // Dashboard
+  'dashboard.welcome': string;
+  'dashboard.stats.postcards': string;
+  'dashboard.stats.orders': string;
+  'dashboard.stats.stories': string;
+  'dashboard.quickActions': string;
+  'dashboard.recentActivity': string;
+  'dashboard.popularTemplates': string;
+  'dashboard.viewAll': string;
+  'dashboard.noActivity': string;
+
+  // Story Creator
+  'story.title': string;
+  'story.selectPreferences': string;
+  'story.location': string;
+  'story.mood': string;
+  'story.length': string;
+  'story.generate': string;
+  'story.save': string;
+  'story.share': string;
+  'story.instagram': string;
+  'story.facebook': string;
+  'story.twitter': string;
+  'story.saving': string;
+  'story.generating': string;
+  'story.saved': string;
+  'story.shareSuccess': string;
+  'story.error': string;
+
+  // Navigation
+  'nav.templates': string;
+  'nav.pricing': string;
+  'nav.gallery': string;
+  'nav.stories': string;
+  'nav.subscription': string;
+
+  // Forms & Inputs
+  'form.email.placeholder': string;
+  'form.password.placeholder': string;
+  'form.confirmPassword.placeholder': string;
+  'form.firstName.placeholder': string;
+  'form.lastName.placeholder': string;
+  'form.required': string;
+  'form.invalid': string;
+
+  // Subscription Plans
+  'plan.digitalFree': string;
+  'plan.printShip': string;
+  'plan.premiumAccess': string;
+  'plan.monthly': string;
+  'plan.features.digitalCards': string;
+  'plan.features.aiStories': string;
+  'plan.features.templates': string;
+  'plan.features.exports': string;
+  'plan.features.unlimited': string;
+  'plan.features.freeShip': string;
+  'plan.features.noWatermarks': string;
+  'plan.features.premium': string;
+  'plan.features.support': string;
+  'plan.features.shipping': string;
 }
 
 const translations: Record<Language, TranslationKeys> = {
@@ -233,6 +333,106 @@ const translations: Record<Language, TranslationKeys> = {
     'message.error.generic': 'Сталася помилка',
     'message.error.network': 'Помилка мережі',
     'message.unauthorized': 'Ви вийшли з системи. Входимо знову...',
+
+    // Home Page
+    'home.hero.subtitle': 'Створюйте персоналізовані цифрові листівки з мальовничими краєвидами Одеси та діліться спогадами з усім світом.',
+    'home.hero.createButton': 'Створити безкоштовну листівку',
+    'home.hero.watchDemo': 'Переглянути демо',
+    'home.features.title': 'Все необхідне для створення чудових листівок',
+    'home.features.subtitle': 'Від безкоштовного цифрового створення до преміального друку, ми покриваємо всі ваші потреби в листівках.',
+    'home.features.templates.title': 'Преміальні шаблони',
+    'home.features.templates.description': 'Красиві, професійно розроблені шаблони з найбільш знаковими пам\'ятками та краєвидами Одеси.',
+    'home.features.customization.title': 'Легке налаштування',
+    'home.features.customization.description': 'Додайте свої фотографії, налаштуйте текст, виберіть шрифти та персоналізуйте кожну деталь з нашим інтуїтивним редактором.',
+    'home.features.sharing.title': 'Соціальний обмін',
+    'home.features.sharing.description': 'Миттєво діліться в Instagram, Facebook, Twitter або надсилайте електронною поштою друзям та родині по всьому світу.',
+    'home.features.printing.title': 'Друк і доставка',
+    'home.features.printing.description': 'Замовляйте високоякісні друковані листівки з доставкою в будь-яку точку світу. Ідеально підходить для традиційної пошти.',
+    'home.templates.title': 'Відкрийте красу Одеси',
+    'home.templates.subtitle': 'Вибирайте з нашої кураторської колекції приголомшливих пам\'яток Одеси та прибережних краєвидів.',
+    'home.templates.viewAll': 'Переглянути всі шаблони',
+    'home.pricing.title': 'Прості, прозорі ціни',
+    'home.pricing.subtitle': 'Починайте безкоштовно, оновлюйтесь, коли будете готові до друку та доставки.',
+    'home.pricing.free.description': 'Ідеально для цифрових листівок',
+    'home.pricing.print.description': 'Цифрові плюс фізичні листівки з AI історіями',
+    'home.pricing.premium.description': 'Повний доступ з преміальними функціями та необмеженим AI',
+    'home.pricing.getStarted': 'Почати безкоштовно',
+    'home.pricing.orderPrint': 'Замовити друковану листівку',
+    'home.pricing.upgrade': 'Оновитись до преміум',
+    'home.pricing.bulk': 'Потрібні оптові замовлення для вашого бізнесу чи заходу?',
+    'home.pricing.contact': 'Зв\'яжіться з нами для індивідуального ціноутворення',
+    'home.gallery.title': 'Створено мандрівниками, такими як ви',
+    'home.gallery.subtitle': 'Приєднуйтесь до тисяч щасливих туристів, які діляться своїми спогадами про Одесу.',
+    'home.stats.postcards': 'створених листівок',
+    'home.stats.rating': 'рейтинг',
+    'home.stats.countries': 'Доставлено в країни',
+    'home.footer.about.title': 'Про Odesa Holiday Postcards',
+    'home.footer.about.description': 'Створюйте та діліться красивими цифровими листівками, що showcasing найкращі пам\'ятки Одеси.',
+    'home.footer.links.title': 'Корисні посилання',
+    'home.footer.support.title': 'Підтримка',
+    'home.footer.social.title': 'Слідкуйте за нами',
+    'home.footer.copyright': '© 2024 Odesa Holiday Postcards. Всі права захищені.',
+
+    // Dashboard
+    'dashboard.welcome': 'Ласкаво просимо назад',
+    'dashboard.stats.postcards': 'Листівки',
+    'dashboard.stats.orders': 'Замовлення',
+    'dashboard.stats.stories': 'AI історії',
+    'dashboard.quickActions': 'Швидкі дії',
+    'dashboard.recentActivity': 'Нещодавня активність',
+    'dashboard.popularTemplates': 'Популярні шаблони',
+    'dashboard.viewAll': 'Переглянути все',
+    'dashboard.noActivity': 'Ще немає активності',
+
+    // Story Creator
+    'story.title': 'AI Генератор історій',
+    'story.selectPreferences': 'Виберіть ваші вподобання',
+    'story.location': 'Локація',
+    'story.mood': 'Настрій',
+    'story.length': 'Довжина',
+    'story.generate': 'Згенерувати історію',
+    'story.save': 'Зберегти',
+    'story.share': 'Поділитися',
+    'story.instagram': 'Instagram',
+    'story.facebook': 'Facebook',
+    'story.twitter': 'Twitter',
+    'story.saving': 'Збереження...',
+    'story.generating': 'Генерація...',
+    'story.saved': 'Збережено!',
+    'story.shareSuccess': 'Успішно поділились!',
+    'story.error': 'Виникла помилка. Спробуйте ще раз.',
+
+    // Navigation
+    'nav.templates': 'Шаблони',
+    'nav.pricing': 'Ціни',
+    'nav.gallery': 'Галерея',
+    'nav.stories': 'Історії',
+    'nav.subscription': 'Підписка',
+
+    // Forms & Inputs
+    'form.email.placeholder': 'Введіть вашу електронну пошту',
+    'form.password.placeholder': 'Введіть ваш пароль',
+    'form.confirmPassword.placeholder': 'Підтвердіть пароль',
+    'form.firstName.placeholder': 'Ім\'я',
+    'form.lastName.placeholder': 'Прізвище',
+    'form.required': 'Це поле обов\'язкове',
+    'form.invalid': 'Невірний формат',
+
+    // Subscription Plans
+    'plan.digitalFree': 'Цифрова безкоштовна',
+    'plan.printShip': 'Друк і доставка',
+    'plan.premiumAccess': 'Преміальний доступ',
+    'plan.monthly': 'на місяць',
+    'plan.features.digitalCards': 'Безкоштовні цифрові листівки',
+    'plan.features.aiStories': 'AI історій на місяць',
+    'plan.features.templates': 'Базові шаблони',
+    'plan.features.exports': 'Стандартної якості експорт',
+    'plan.features.unlimited': 'Необмежені цифрові листівки',
+    'plan.features.freeShip': 'безкоштовна фізична листівка на місяць',
+    'plan.features.noWatermarks': 'Без водяних знаків',
+    'plan.features.premium': 'Преміальні шаблони включені',
+    'plan.features.support': 'Пріоритетна підтримка клієнтів',
+    'plan.features.shipping': 'Вартість доставки окремо',
   },
   en: {
     // Navigation & Common
@@ -348,6 +548,106 @@ const translations: Record<Language, TranslationKeys> = {
     'message.error.generic': 'An error occurred',
     'message.error.network': 'Network error',
     'message.unauthorized': 'You are logged out. Logging in again...',
+
+    // Home Page
+    'home.hero.subtitle': 'Create personalized digital postcards featuring Odesa\'s scenic landscapes and share memories with the world.',
+    'home.hero.createButton': 'Create Free Postcard',
+    'home.hero.watchDemo': 'Watch Demo',
+    'home.features.title': 'Everything You Need to Create Amazing Postcards',
+    'home.features.subtitle': 'From free digital creation to premium printing, we\'ve got all your postcard needs covered.',
+    'home.features.templates.title': 'Premium Templates',
+    'home.features.templates.description': 'Beautiful, professionally designed templates featuring Odesa\'s most iconic landmarks and views.',
+    'home.features.customization.title': 'Easy Customization',
+    'home.features.customization.description': 'Add your photos, customize text, choose fonts, and personalize every detail with our intuitive editor.',
+    'home.features.sharing.title': 'Social Sharing',
+    'home.features.sharing.description': 'Share instantly on Instagram, Facebook, Twitter, or send via email to friends and family worldwide.',
+    'home.features.printing.title': 'Print & Ship',
+    'home.features.printing.description': 'Order high-quality printed postcards delivered anywhere in the world. Perfect for traditional mail.',
+    'home.templates.title': 'Discover Odesa\'s Beauty',
+    'home.templates.subtitle': 'Choose from our curated collection of stunning Odesa landmarks and coastal views.',
+    'home.templates.viewAll': 'View All Templates',
+    'home.pricing.title': 'Simple, Transparent Pricing',
+    'home.pricing.subtitle': 'Start for free, upgrade when you\'re ready to print and ship.',
+    'home.pricing.free.description': 'Perfect for digital postcards',
+    'home.pricing.print.description': 'Digital plus physical postcards with AI stories',
+    'home.pricing.premium.description': 'Full access with premium features and unlimited AI',
+    'home.pricing.getStarted': 'Get Started Free',
+    'home.pricing.orderPrint': 'Order Printed Postcard',
+    'home.pricing.upgrade': 'Upgrade to Premium',
+    'home.pricing.bulk': 'Need bulk orders for your business or event?',
+    'home.pricing.contact': 'Contact us for custom pricing',
+    'home.gallery.title': 'Created by Travelers Like You',
+    'home.gallery.subtitle': 'Join thousands of happy tourists sharing their Odesa memories.',
+    'home.stats.postcards': 'postcards created',
+    'home.stats.rating': 'rating',
+    'home.stats.countries': 'Shipped to countries',
+    'home.footer.about.title': 'About Odesa Holiday Postcards',
+    'home.footer.about.description': 'Create and share beautiful digital postcards showcasing the best of Odesa\'s landmarks.',
+    'home.footer.links.title': 'Quick Links',
+    'home.footer.support.title': 'Support',
+    'home.footer.social.title': 'Follow Us',
+    'home.footer.copyright': '© 2024 Odesa Holiday Postcards. All rights reserved.',
+
+    // Dashboard
+    'dashboard.welcome': 'Welcome back',
+    'dashboard.stats.postcards': 'Postcards',
+    'dashboard.stats.orders': 'Orders',
+    'dashboard.stats.stories': 'AI Stories',
+    'dashboard.quickActions': 'Quick Actions',
+    'dashboard.recentActivity': 'Recent Activity',
+    'dashboard.popularTemplates': 'Popular Templates',
+    'dashboard.viewAll': 'View All',
+    'dashboard.noActivity': 'No activity yet',
+
+    // Story Creator
+    'story.title': 'AI Story Generator',
+    'story.selectPreferences': 'Select Your Preferences',
+    'story.location': 'Location',
+    'story.mood': 'Mood',
+    'story.length': 'Length',
+    'story.generate': 'Generate Story',
+    'story.save': 'Save',
+    'story.share': 'Share',
+    'story.instagram': 'Instagram',
+    'story.facebook': 'Facebook',
+    'story.twitter': 'Twitter',
+    'story.saving': 'Saving...',
+    'story.generating': 'Generating...',
+    'story.saved': 'Saved!',
+    'story.shareSuccess': 'Successfully shared!',
+    'story.error': 'An error occurred. Please try again.',
+
+    // Navigation
+    'nav.templates': 'Templates',
+    'nav.pricing': 'Pricing',
+    'nav.gallery': 'Gallery',
+    'nav.stories': 'Stories',
+    'nav.subscription': 'Subscription',
+
+    // Forms & Inputs
+    'form.email.placeholder': 'Enter your email',
+    'form.password.placeholder': 'Enter your password',
+    'form.confirmPassword.placeholder': 'Confirm password',
+    'form.firstName.placeholder': 'First name',
+    'form.lastName.placeholder': 'Last name',
+    'form.required': 'This field is required',
+    'form.invalid': 'Invalid format',
+
+    // Subscription Plans
+    'plan.digitalFree': 'Digital Free',
+    'plan.printShip': 'Print & Ship',
+    'plan.premiumAccess': 'Premium Access',
+    'plan.monthly': 'per month',
+    'plan.features.digitalCards': 'Free digital postcards',
+    'plan.features.aiStories': 'AI stories per month',
+    'plan.features.templates': 'Basic templates',
+    'plan.features.exports': 'Standard quality exports',
+    'plan.features.unlimited': 'Unlimited digital postcards',
+    'plan.features.freeShip': 'free physical postcard per month',
+    'plan.features.noWatermarks': 'No watermarks',
+    'plan.features.premium': 'Premium templates included',
+    'plan.features.support': 'Priority customer support',
+    'plan.features.shipping': 'Shipping costs apply separately',
   }
 };
 
