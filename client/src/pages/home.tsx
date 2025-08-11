@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/lib/i18n";
 import { 
   Mail, 
   Sparkles, 
@@ -29,6 +30,7 @@ import type { Template, Postcard } from "@shared/schema";
 export default function Home() {
   const [, setLocation] = useLocation();
   const { isAuthenticated } = useAuth();
+  const { t } = useLanguage();
   
   const { data: templates = [] } = useQuery<Template[]>({
     queryKey: ["/api/templates"],
@@ -71,7 +73,7 @@ export default function Home() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="font-playfair text-4xl lg:text-6xl font-bold mb-6 leading-tight">
-                Create Beautiful <span className="text-yellow-300">Odesa Holiday Postcards</span> in Minutes
+                {t('landing.title')}
               </h1>
               <p className="text-xl mb-8 text-blue-100 leading-relaxed">
                 Design stunning digital postcards featuring Odesa's iconic landmarks. Share memories, spread joy, and order premium printed versions.

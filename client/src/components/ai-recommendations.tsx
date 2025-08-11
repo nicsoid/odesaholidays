@@ -8,6 +8,7 @@ import { MapPin, Clock, Camera, Star, Sparkles, Eye, ChevronRight } from "lucide
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
+import { useLanguage } from "@/lib/i18n";
 
 interface LandmarkRecommendation {
   name: string;
@@ -25,6 +26,7 @@ export default function AIRecommendations() {
   const queryClient = useQueryClient();
   const [isGenerating, setIsGenerating] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const { t } = useLanguage();
 
   // Get user preferences
   const { data: userPreferences } = useQuery<any>({
@@ -89,10 +91,10 @@ export default function AIRecommendations() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-ukrainian-blue" />
-            AI-Powered Recommendations
+            {t('ai.title')}
           </CardTitle>
           <CardDescription>
-            Complete your onboarding to get personalized landmark suggestions
+            {t('ai.description')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -107,7 +109,7 @@ export default function AIRecommendations() {
             <Link href="/onboarding">
               <Button className="w-full bg-ukrainian-blue hover:bg-blue-700">
                 <Sparkles className="mr-2 h-4 w-4" />
-                Complete Setup
+                {t('ai.completeOnboarding')}
               </Button>
             </Link>
             <div className="mt-4 pt-4 border-t">

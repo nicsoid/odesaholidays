@@ -2,12 +2,15 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/lib/i18n";
+import LanguageSwitcher from "@/components/language-switcher";
 import { Mail, Menu, X, User, LogOut, Crown } from "lucide-react";
 
 export default function Navigation() {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, isAuthenticated, logout } = useAuth();
+  const { t } = useLanguage();
 
   const isActive = (path: string) => location === path;
 
@@ -24,30 +27,33 @@ export default function Navigation() {
           
           <div className="hidden md:flex items-center space-x-8">
             <a href="/#templates" className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
-              Templates
+              {t('landing.features.templates.title')}
             </a>
             <a href="/#pricing" className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
-              Pricing
+              {t('subscription.title')}
             </a>
             <a href="/#gallery" className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
               Gallery
             </a>
             <Link href="/events">
-              <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Events</span>
+              <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">{t('nav.events')}</span>
             </Link>
             <Link href="/locations">
-              <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Locations</span>
+              <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">{t('nav.locations')}</span>
             </Link>
             {isAuthenticated && (
               <Link href="/dashboard">
-                <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Dashboard</span>
+                <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">{t('nav.dashboard')}</span>
               </Link>
             )}
             {isAuthenticated && user?.email === "admin@odesa.holiday" && (
               <Link href="/admin">
-                <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">Admin</span>
+                <span className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">{t('nav.admin')}</span>
               </Link>
             )}
+            
+            {/* Language Switcher */}
+            <LanguageSwitcher />
             
             {isAuthenticated ? (
               <div className="flex items-center space-x-4">
@@ -58,7 +64,7 @@ export default function Navigation() {
                 <Link href="/subscription">
                   <Button variant="outline" size="sm" className="text-yellow-600 border-yellow-400 hover:bg-yellow-50">
                     <Crown className="h-4 w-4 mr-2" />
-                    Subscribe
+                    {t('subscription.subscribe')}
                   </Button>
                 </Link>
                 <Button 
@@ -68,11 +74,11 @@ export default function Navigation() {
                   className="text-gray-600 hover:text-red-600"
                 >
                   <LogOut className="h-4 w-4 mr-2" />
-                  Logout
+                  {t('nav.logout')}
                 </Button>
                 <Link href="/creator">
                   <Button className="bg-ukrainian-blue hover:bg-blue-700">
-                    Start Creating
+                    {t('nav.creator')}
                   </Button>
                 </Link>
               </div>
@@ -80,12 +86,12 @@ export default function Navigation() {
               <div className="flex items-center space-x-4">
                 <Link href="/login">
                   <Button variant="outline" size="sm">
-                    Sign In
+                    {t('nav.login')}
                   </Button>
                 </Link>
                 <Link href="/register">
                   <Button className="bg-ukrainian-blue hover:bg-blue-700">
-                    Sign Up
+                    {t('nav.register')}
                   </Button>
                 </Link>
               </div>
