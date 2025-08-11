@@ -62,4 +62,7 @@ The application follows a monorepo structure with shared TypeScript schemas betw
 - **Subscription Model Update**: Implemented simplified pricing structure with $2.99/week and $5.99/month plans for unlimited digital postcards and AI stories
 - **Instagram Sharing Integration**: Added direct Instagram sharing functionality allowing users to share AI-generated stories with photos directly to Instagram app (mobile) or web (desktop) with automatic caption copying
 - **Language-Aware AI Stories**: Implemented multilingual AI story generation - Ukrainian users receive stories in Ukrainian while English users get English stories, with proper fallback handling
+- **Payload Size Fix**: Increased Express payload limit to 10MB to resolve "message too long" error when saving AI-generated stories
+- **Updated Subscription Plans**: Implemented new pricing structure with Digital Free ($0), Print & Ship ($4.99/month), and Premium Access ($9.99/month) with matching features between home page and subscription page
+- **Language Switcher Auto-Reload**: Fixed language switcher to automatically reload the page when users change language, ensuring all menu items and content update immediately
 - **UI Polish**: Enhanced Ukrainian color theming throughout the application with proper contrast and accessibility improvements

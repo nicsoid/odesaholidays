@@ -389,6 +389,10 @@ export const useLanguage = () => {
 
   const switchLanguage = (newLanguage: Language) => {
     setLanguage(newLanguage);
+    // Reload the page to ensure all components reflect the new language
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
 
   return {

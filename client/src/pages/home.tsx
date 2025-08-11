@@ -235,23 +235,19 @@ export default function Home() {
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Unlimited digital postcards</span>
+                    <span>Free digital postcards</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Access to all free templates</span>
+                    <span>5 AI stories per month</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Basic customization tools</span>
+                    <span>Basic templates</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Social media sharing</span>
-                  </li>
-                  <li className="flex items-center">
-                    <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Email delivery</span>
+                    <span>Standard quality exports</span>
                   </li>
                 </ul>
                 <Link href="/creator">
@@ -270,29 +266,29 @@ export default function Home() {
               <CardContent className="p-8">
                 <div className="text-center mb-8">
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Print & Ship</h3>
-                  <div className="text-4xl font-bold text-gray-900 mb-2">$3.99</div>
-                  <p className="text-gray-600">Per printed postcard</p>
+                  <div className="text-4xl font-bold text-gray-900 mb-2">$4.99</div>
+                  <p className="text-gray-600">Per month</p>
                 </div>
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Everything in Digital Free</span>
+                    <span>Unlimited digital postcards</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Premium paper quality</span>
+                    <span>1 free physical postcard per month</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Worldwide shipping</span>
+                    <span>20 AI stories per month</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Tracking included</span>
+                    <span>No watermarks</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Bulk discounts available</span>
+                    <span>Shipping costs apply separately</span>
                   </li>
                 </ul>
                 <Link href="/creator">
@@ -314,23 +310,27 @@ export default function Home() {
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Everything in Print & Ship</span>
+                    <span>Unlimited digital postcards</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Premium template library</span>
+                    <span>Premium templates included</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Advanced editing tools</span>
+                    <span>200 AI stories per month</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Remove watermarks</span>
+                    <span>No watermarks</span>
                   </li>
                   <li className="flex items-center">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
-                    <span>Priority support</span>
+                    <span>Priority customer support</span>
+                  </li>
+                  <li className="flex items-center">
+                    <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                    <span>High-resolution exports</span>
                   </li>
                 </ul>
                 <Button variant="outline" className="w-full text-sunset-orange border-sunset-orange hover:bg-sunset-orange hover:text-white">
