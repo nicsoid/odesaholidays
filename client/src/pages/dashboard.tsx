@@ -30,6 +30,15 @@ export default function Dashboard() {
     queryKey: ["/api/analytics/user"],
   });
 
+  const { data: detailedStats } = useQuery<{
+    downloadedCards: number;
+    printedCards: number;
+    storiesCreated: number;
+    totalShares: number;
+  }>({
+    queryKey: ["/api/analytics/user/detailed"],
+  });
+
   const { data: userPostcards = [] } = useQuery<Postcard[]>({
     queryKey: ["/api/postcards/user"],
   });
@@ -42,10 +51,12 @@ export default function Dashboard() {
     queryKey: ["/api/analytics/popular-templates?limit=5"],
   });
 
-  // Calculate stats
+  // Use detailed stats or fallback to calculated values
   const totalCreated = userPostcards.length;
-  const totalDownloads = userPostcards.reduce((sum, p) => sum + (p.downloadCount || 0), 0);
-  const totalShares = userPostcards.reduce((sum, p) => sum + (p.shareCount || 0), 0);
+  const totalDownloads = detailedStats?.downloadedCards || userPostcards.reduce((sum, p) => sum + (p.downloadCount || 0), 0);
+  const totalPrinted = detailedStats?.printedCards || userOrders.reduce((sum, o) => sum + (o.quantity || 0), 0);
+  const totalStories = detailedStats?.storiesCreated || 0;
+  const totalShares = detailedStats?.totalShares || userPostcards.reduce((sum, p) => sum + (p.shareCount || 0), 0);
   const totalOrders = userOrders.length;
   const totalRevenue = userOrders.reduce((sum, o) => sum + parseFloat(o.totalAmount), 0);
 
@@ -84,7 +95,7 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Overview */}
-        <div className="grid md:grid-cols-4 gap-6 mb-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -101,10 +112,34 @@ export default function Dashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total Downloads</p>
+                  <p className="text-sm text-gray-600">Downloaded Cards</p>
                   <p className="text-3xl font-bold text-sunflower">{totalDownloads}</p>
                 </div>
                 <Download className="h-8 w-8 text-sunflower" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Printed Cards</p>
+                  <p className="text-3xl font-bold text-orange-500">{totalPrinted}</p>
+                </div>
+                <ShoppingCart className="h-8 w-8 text-orange-500" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">Stories Created</p>
+                  <p className="text-3xl font-bold text-purple-600">{totalStories}</p>
+                </div>
+                <TrendingUp className="h-8 w-8 text-purple-600" />
               </div>
             </CardContent>
           </Card>
@@ -117,18 +152,6 @@ export default function Dashboard() {
                   <p className="text-3xl font-bold text-sunset-orange">{totalShares}</p>
                 </div>
                 <Share2 className="h-8 w-8 text-sunset-orange" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Print Orders</p>
-                  <p className="text-3xl font-bold text-ocean-blue">{totalOrders}</p>
-                </div>
-                <ShoppingCart className="h-8 w-8 text-ocean-blue" />
               </div>
             </CardContent>
           </Card>

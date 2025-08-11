@@ -483,6 +483,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user's detailed statistics (authenticated route)
+  app.get("/api/analytics/user/detailed", authenticateToken, async (req: any, res) => {
+    try {
+      const stats = await mongoStorage.getUserDetailedStats(req.user._id);
+      res.json(stats);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   app.get("/api/analytics/popular-templates", async (req, res) => {
     try {
       const { limit = 10 } = req.query;

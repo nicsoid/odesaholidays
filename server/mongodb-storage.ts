@@ -790,6 +790,43 @@ export class MongoStorage implements IMongoStorage {
     }
   }
 
+  async getUserDetailedStats(userId: string): Promise<{
+    downloadedCards: number;
+    printedCards: number;
+    storiesCreated: number;
+    totalShares: number;
+  }> {
+    try {
+      // Get user postcards and their stats
+      const postcards = await this.postcards.find({ userId }).toArray();
+      const downloadedCards = postcards.reduce((sum, p) => sum + (p.downloadCount || 0), 0);
+      const totalShares = postcards.reduce((sum, p) => sum + (p.shareCount || 0), 0);
+
+      // Get printed cards (orders)
+      const orders = await this.orders.find({ userId }).toArray();
+      const printedCards = orders.reduce((sum, o) => sum + (o.quantity || 0), 0);
+
+      // Get stories created
+      const stories = await this.travelStories.find({ userId }).toArray();
+      const storiesCreated = stories.length;
+
+      return {
+        downloadedCards,
+        printedCards,
+        storiesCreated,
+        totalShares
+      };
+    } catch (error) {
+      console.error('Error getting user detailed stats:', error);
+      return {
+        downloadedCards: 0,
+        printedCards: 0,
+        storiesCreated: 0,
+        totalShares: 0
+      };
+    }
+  }
+
   // Onboarding & AI Features
   async createUserPreferences(preferencesData: InsertUserPreferences): Promise<UserPreferences> {
     try {
