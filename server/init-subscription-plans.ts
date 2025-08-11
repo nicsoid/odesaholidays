@@ -7,48 +7,47 @@ async function initializeSubscriptionPlans() {
     
     const defaultPlans = [
       {
-        id: 'basic-monthly',
-        name: 'Basic Plan',
-        description: 'Perfect for occasional postcard senders',
-        stripePriceId: 'price_basic_monthly', // This should be replaced with actual Stripe price ID
+        id: 'digital-free',
+        name: 'Digital Free',
+        description: 'Perfect for digital postcard enthusiasts',
+        stripePriceId: null, // Free plan
+        monthlyPrice: 0,
+        features: [
+          'Free digital postcards',
+          '5 AI stories per month',
+          'Basic templates',
+          'Standard quality exports'
+        ]
+      },
+      {
+        id: 'print-ship',
+        name: 'Print & Ship',
+        description: 'Digital plus physical postcards with AI stories',
+        stripePriceId: 'price_print_ship_monthly', // This should be replaced with actual Stripe price ID
+        monthlyPrice: 4.99,
+        features: [
+          'Unlimited digital postcards',
+          '1 free physical postcard per month',
+          '20 AI stories per month',
+          'No watermarks',
+          'Standard templates',
+          'Shipping costs apply separately'
+        ]
+      },
+      {
+        id: 'premium-access',
+        name: 'Premium Access',
+        description: 'Full access with premium features and unlimited AI',
+        stripePriceId: 'price_premium_access_monthly', // This should be replaced with actual Stripe price ID
         monthlyPrice: 9.99,
         features: [
           'Unlimited digital postcards',
-          '10 physical postcards per month',
-          'Free worldwide shipping',
-          'Standard templates'
-        ]
-      },
-      {
-        id: 'premium-monthly',
-        name: 'Premium Plan',
-        description: 'Best for frequent travelers and postcard enthusiasts',
-        stripePriceId: 'price_premium_monthly', // This should be replaced with actual Stripe price ID
-        monthlyPrice: 19.99,
-        features: [
-          'Unlimited digital postcards',
-          'Unlimited physical postcards',
-          'Free worldwide shipping',
-          'Premium templates',
+          'Premium templates included',
+          '200 AI stories per month',
+          'No watermarks',
           'Priority customer support',
-          'Custom postcard designs'
-        ]
-      },
-      {
-        id: 'family-monthly',
-        name: 'Family Plan',
-        description: 'Share the joy with your whole family',
-        stripePriceId: 'price_family_monthly', // This should be replaced with actual Stripe price ID
-        monthlyPrice: 29.99,
-        features: [
-          'Up to 5 family accounts',
-          'Unlimited digital postcards',
-          'Unlimited physical postcards',
-          'Free worldwide shipping',
-          'Premium templates',
-          'Priority customer support',
-          'Custom postcard designs',
-          'Family photo albums'
+          'Advanced customization options',
+          'High-resolution exports'
         ]
       }
     ];

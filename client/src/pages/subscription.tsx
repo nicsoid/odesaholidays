@@ -92,55 +92,56 @@ export default function Subscription() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
 
-  // Define the new simplified pricing plans
-  const simplifiedPlans: SubscriptionPlan[] = [
+  // Define the new subscription plans
+  const newPlans: SubscriptionPlan[] = [
     {
-      id: "free",
-      name: "Free Plan",
-      description: "Perfect for trying out digital postcards",
+      id: "digital-free",
+      name: "Digital Free",
+      description: "Perfect for digital postcard enthusiasts",
       monthlyPrice: 0,
       features: [
-        "20 free digital postcards",
-        "Basic Odesa templates",
-        "Standard quality downloads",
-        "Community support"
+        "Free digital postcards",
+        "5 AI stories per month",
+        "Basic templates",
+        "Standard quality exports"
       ],
       stripePriceId: ""
     },
     {
-      id: "weekly",
-      name: "Weekly Plan",
-      description: "Great for active travelers and storytellers",
-      monthlyPrice: 2.99,
+      id: "print-ship",
+      name: "Print & Ship",
+      description: "Digital plus physical postcards with AI stories",
+      monthlyPrice: 4.99,
       features: [
         "Unlimited digital postcards",
-        "AI-powered travel stories",
-        "All premium templates",
-        "High-quality downloads",
-        "Instagram-ready formats",
-        "Priority support"
+        "1 free physical postcard per month",
+        "20 AI stories per month",
+        "No watermarks",
+        "Standard templates",
+        "Shipping costs apply separately"
       ],
-      stripePriceId: "price_weekly_299"
+      stripePriceId: "price_print_ship_monthly"
     },
     {
-      id: "monthly", 
-      name: "Monthly Plan",
-      description: "Best value for postcard enthusiasts",
-      monthlyPrice: 5.99,
+      id: "premium-access",
+      name: "Premium Access",
+      description: "Full access with premium features and unlimited AI",
+      monthlyPrice: 9.99,
       features: [
-        "Everything in Weekly Plan",
-        "Advanced AI customization", 
-        "Exclusive landmark templates",
-        "Unlimited story generations",
-        "Custom branding options",
-        "Premium support"
+        "Unlimited digital postcards",
+        "Premium templates included",
+        "200 AI stories per month",
+        "No watermarks",
+        "Priority customer support",
+        "Advanced customization options",
+        "High-resolution exports"
       ],
-      stripePriceId: "price_monthly_599"
+      stripePriceId: "price_premium_access_monthly"
     }
   ];
 
-  // Use simplified plans instead of API call
-  const plans = simplifiedPlans;
+  // Use new plans structure
+  const plans = newPlans;
   const plansLoading = false;
 
   // Get user's current subscription status

@@ -4,8 +4,8 @@ import { setupVite, serveStatic, log } from "./vite";
 import { connectToDatabase } from "./database";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '10mb' })); // Increase payload limit for AI-generated stories
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 app.use((req, res, next) => {
   const start = Date.now();
