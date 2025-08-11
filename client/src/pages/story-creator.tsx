@@ -364,7 +364,7 @@ export default function StoryCreator() {
                 {/* Generate Button */}
                 <Button
                   onClick={handleGenerateStory}
-                  disabled={!selectedLocation || isGenerating}
+                  disabled={!selectedLocation || !selectedMood || !selectedStyle || isGenerating}
                   className="w-full bg-ukrainian-blue hover:bg-blue-700"
                   size="lg"
                 >

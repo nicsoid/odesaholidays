@@ -1053,14 +1053,23 @@ export class MongoStorage implements IMongoStorage {
 
   // Helper method to hash preferences for caching
   private hashPreferences(preferences: any): string {
-    const crypto = require('crypto');
-    const str = JSON.stringify({
-      interests: preferences.interests,
-      travelStyle: preferences.travelStyle,
-      preferredActivities: preferences.preferredActivities,
-      timeOfYear: preferences.timeOfYear
+    import('crypto').then(crypto => {
+      const str = JSON.stringify({
+        interests: preferences.interests,
+        travelStyle: preferences.travelStyle,
+        preferredActivities: preferences.preferredActivities,
+        timeOfYear: preferences.timeOfYear
+      });
+      return crypto.createHash('md5').update(str).digest('hex');
     });
-    return crypto.createHash('md5').update(str).digest('hex');
+    // Simple fallback hash for now
+    const str = JSON.stringify({
+      interests: preferences.interests || [],
+      travelStyle: preferences.travelStyle || '',
+      preferredActivities: preferences.preferredActivities || [],
+      timeOfYear: preferences.timeOfYear || ''
+    });
+    return Buffer.from(str).toString('base64').slice(0, 16);
   }
 }
 

@@ -500,34 +500,36 @@ export default function Creator() {
 
               {currentPostcard && selectedTemplate && (
                 <div className="space-y-4">
-                  <SocialShare postcard={currentPostcard} />
-                  
-                  <SocialMediaPreview
-                    postcardId={currentPostcard.id.toString()}
-                    templateName={selectedTemplate.name}
-                    message={currentPostcard.message}
-                    landmark={selectedTemplate.name}
-                    imageUrl={selectedTemplate.imageUrl}
-                  />
-                  
-                  <div className="flex gap-2">
-                    <InteractiveButton
-                      variant="secondary"
-                      onClick={handleDownload}
-                      disabled={downloadMutation.isPending}
-                      className="flex-1"
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      Download Free
-                    </InteractiveButton>
-                    <InteractiveButton
-                      onClick={handleOrderPrint}
-                      className="flex-1"
-                      variant="primary"
-                    >
-                      <ShoppingCart className="h-4 w-4 mr-2" />
-                      Order Print ($3.99)
-                    </InteractiveButton>
+                  <div className="flex flex-col gap-4">
+                    <SocialShare postcard={currentPostcard} />
+                    
+                    <div className="flex gap-2">
+                      <InteractiveButton
+                        variant="secondary"
+                        onClick={handleDownload}
+                        disabled={downloadMutation.isPending}
+                        className="flex-1"
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download Free
+                      </InteractiveButton>
+                      <InteractiveButton
+                        onClick={handleOrderPrint}
+                        className="flex-1"
+                        variant="primary"
+                      >
+                        <ShoppingCart className="h-4 w-4 mr-2" />
+                        Order Print ($3.99)
+                      </InteractiveButton>
+                    </div>
+                    
+                    <SocialMediaPreview
+                      postcardId={currentPostcard.id.toString()}
+                      templateName={selectedTemplate.name}
+                      message={currentPostcard.message}
+                      landmark={selectedTemplate.name}
+                      imageUrl={selectedTemplate.imageUrl}
+                    />
                   </div>
                 </div>
               )}

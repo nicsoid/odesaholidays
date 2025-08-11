@@ -17,7 +17,7 @@ export default function Navigation() {
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-14">
           <Link href="/">
             <div className="flex items-center cursor-pointer">
               <Mail className="text-ukrainian-blue h-8 w-8 mr-2" />
@@ -25,7 +25,7 @@ export default function Navigation() {
             </div>
           </Link>
           
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-6">
             <a href="/#templates" className="text-gray-600 hover:text-ukrainian-blue transition-colors cursor-pointer">
               {t('landing.features.templates.title')}
             </a>
@@ -56,15 +56,14 @@ export default function Navigation() {
             <LanguageSwitcher />
             
             {isAuthenticated ? (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2">
                   <User className="h-4 w-4 text-gray-600" />
-                  <span className="text-sm text-gray-600">{user?.email}</span>
+                  <span className="text-sm text-gray-600 max-w-32 truncate">{user?.email}</span>
                 </div>
                 <Link href="/subscription">
                   <Button variant="outline" size="sm" className="text-yellow-600 border-yellow-400 hover:bg-yellow-50">
-                    <Crown className="h-4 w-4 mr-2" />
-                    {t('subscription.subscribe')}
+                    <Crown className="h-4 w-4" />
                   </Button>
                 </Link>
                 <Button 
@@ -73,29 +72,28 @@ export default function Navigation() {
                   onClick={logout}
                   className="text-gray-600 hover:text-red-600"
                 >
-                  <LogOut className="h-4 w-4 mr-2" />
-                  {t('nav.logout')}
+                  <LogOut className="h-4 w-4" />
                 </Button>
                 <Link href="/story-creator">
-                  <Button variant="outline" className="border-ukrainian-blue text-ukrainian-blue hover:bg-ukrainian-blue hover:text-white">
+                  <Button variant="outline" size="sm" className="border-ukrainian-blue text-ukrainian-blue hover:bg-ukrainian-blue hover:text-white">
                     AI Stories
                   </Button>
                 </Link>
                 <Link href="/creator">
-                  <Button className="bg-ukrainian-blue hover:bg-blue-700">
+                  <Button size="sm" className="bg-ukrainian-blue hover:bg-blue-700">
                     {t('nav.creator')}
                   </Button>
                 </Link>
               </div>
             ) : (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
                 <Link href="/login">
                   <Button variant="outline" size="sm">
                     {t('nav.login')}
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button className="bg-ukrainian-blue hover:bg-blue-700">
+                  <Button size="sm" className="bg-ukrainian-blue hover:bg-blue-700">
                     {t('nav.register')}
                   </Button>
                 </Link>

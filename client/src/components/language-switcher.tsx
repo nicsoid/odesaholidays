@@ -14,13 +14,9 @@ export default function LanguageSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-2">
-          <Globe className="h-4 w-4" />
-          <span className="hidden sm:inline">
-            {language === 'uk' ? 'Українська' : 'English'}
-          </span>
-          <span className="sm:hidden">
-            {language === 'uk' ? 'UK' : 'EN'}
+        <Button variant="outline" size="sm" className="px-2">
+          <span className="text-lg">
+            {language === 'uk' ? '🇺🇦' : '🇺🇸'}
           </span>
         </Button>
       </DropdownMenuTrigger>
