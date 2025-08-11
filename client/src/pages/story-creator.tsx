@@ -203,6 +203,42 @@ export default function StoryCreator() {
     });
   };
 
+  const shareToInstagram = async () => {
+    if (!generatedStory) return;
+
+    const caption = `${generatedStory.instagramCaption}\n\n#${generatedStory.hashtags.join(' #')}`;
+    
+    // Check if device is mobile
+    const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+      // Try to open Instagram app directly with intent
+      const instagramUrl = `instagram://camera`;
+      
+      // Copy content to clipboard first
+      await navigator.clipboard.writeText(caption);
+      
+      // Try to open Instagram app
+      const link = document.createElement('a');
+      link.href = instagramUrl;
+      link.click();
+      
+      toast({
+        title: "Opening Instagram...",
+        description: "Caption copied to clipboard. Paste it when sharing your photo!",
+      });
+    } else {
+      // Desktop: Open Instagram web and copy content
+      await navigator.clipboard.writeText(caption);
+      window.open('https://www.instagram.com/', '_blank');
+      
+      toast({
+        title: "Instagram Opened",
+        description: "Caption copied to clipboard. Paste it when creating your post!",
+      });
+    }
+  };
+
   const selectedMoodData = MOODS.find(m => m.value === selectedMood);
   const MoodIcon = selectedMoodData?.icon || Smile;
 
@@ -490,14 +526,22 @@ export default function StoryCreator() {
                       Save Story
                     </Button>
                     <Button
+                      onClick={shareToInstagram}
+                      className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+                    >
+                      <Instagram className="h-4 w-4 mr-2" />
+                      Share to Instagram
+                    </Button>
+                    <Button
                       onClick={() => copyToClipboard(
                         `${generatedStory.instagramCaption}\n\n#${generatedStory.hashtags.join(' #')}`,
                         "Instagram post"
                       )}
-                      className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600"
+                      variant="outline"
+                      className="flex-1"
                     >
                       <Share2 className="h-4 w-4 mr-2" />
-                      Copy for Instagram
+                      Copy Caption
                     </Button>
                   </div>
                 </CardContent>
