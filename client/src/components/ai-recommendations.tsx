@@ -27,7 +27,7 @@ export default function AIRecommendations() {
   const [activeCategory, setActiveCategory] = useState<string>('all');
 
   // Get user preferences
-  const { data: userPreferences } = useQuery({
+  const { data: userPreferences } = useQuery<any>({
     queryKey: ["/api/user/preferences"],
     retry: 1,
   });

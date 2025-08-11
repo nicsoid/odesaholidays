@@ -185,7 +185,7 @@ export default function Creator() {
       ) || templates[0]; // Fallback to first template if no match
       
       setSelectedTemplate(matchingTemplate);
-      sounds.select();
+      sounds?.select?.();
       
       // Load relevant images for the landmark - only once
       fetchLandmarkImages(landmarkParam);
