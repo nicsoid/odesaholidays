@@ -14,10 +14,12 @@ interface AuthContextType {
 const TOKEN_STORAGE_KEY = 'odesa_auth_token';
 
 export function useAuth(): AuthContextType {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return !!localStorage.getItem(TOKEN_STORAGE_KEY);
+  });
 
-  // Get current user
-  const { data: user, isLoading } = useQuery<{ user: User }>({
+  // Get current user - this query will run if there's a token
+  const { data: user, isLoading, error } = useQuery<{ user: User }>({
     queryKey: ['/api/auth/me'],
     retry: false,
     enabled: !!localStorage.getItem(TOKEN_STORAGE_KEY),
@@ -44,18 +46,26 @@ export function useAuth(): AuthContextType {
     window.location.href = '/';
   };
 
-  // Update authentication state based on user data
+  // Update authentication state based on user data and token presence
   useEffect(() => {
+    const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+    
+    if (!token) {
+      setIsAuthenticated(false);
+      return;
+    }
+
+    // If we have user data, we're authenticated
     if (user?.user) {
       setIsAuthenticated(true);
-    } else if (!isLoading && !user) {
+    } 
+    // If query failed with error, clear token and set to unauthenticated
+    else if (!isLoading && error) {
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
       setIsAuthenticated(false);
-      // Clean up invalid token
-      if (localStorage.getItem(TOKEN_STORAGE_KEY)) {
-        localStorage.removeItem(TOKEN_STORAGE_KEY);
-      }
     }
-  }, [user, isLoading]);
+    // If we have a token but no user data yet, keep current state
+  }, [user, isLoading, error]);
 
   return {
     isAuthenticated,

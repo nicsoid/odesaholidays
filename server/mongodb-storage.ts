@@ -916,11 +916,14 @@ export class MongoStorage implements IMongoStorage {
     }
   }
 
-  async getUserTravelStories(userId: string): Promise<any[]> {
+  async getUserTravelStories(userId: string, page: number = 1, limit: number = 10): Promise<any[]> {
     try {
+      const skip = (page - 1) * limit;
       const stories = await this.travelStories
         .find({ userId })
         .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
         .toArray();
       
       return stories.map(story => ({
@@ -961,6 +964,103 @@ export class MongoStorage implements IMongoStorage {
     } catch (error) {
       throw new Error("Failed to create or update story preferences");
     }
+  }
+
+  // Additional methods needed for the routes
+  async getTravelStory(storyId: string): Promise<any> {
+    try {
+      const story = await this.travelStories.findOne({ _id: new ObjectId(storyId) });
+      if (!story) return null;
+      return { ...story, _id: story._id.toString() };
+    } catch (error) {
+      throw new Error("Failed to get travel story");
+    }
+  }
+
+  async updateTravelStory(storyId: string, updateData: any): Promise<any> {
+    try {
+      const result = await this.travelStories.findOneAndUpdate(
+        { _id: new ObjectId(storyId) },
+        { $set: { ...updateData, updatedAt: new Date() } },
+        { returnDocument: 'after' }
+      );
+      if (!result) throw new Error("Story not found");
+      return { ...result, _id: result._id.toString() };
+    } catch (error) {
+      throw new Error("Failed to update travel story");
+    }
+  }
+
+  async deleteTravelStory(storyId: string): Promise<void> {
+    try {
+      await this.travelStories.deleteOne({ _id: new ObjectId(storyId) });
+    } catch (error) {
+      throw new Error("Failed to delete travel story");
+    }
+  }
+
+  async saveUserStoryPreferences(preferencesData: any): Promise<any> {
+    try {
+      return await this.createOrUpdateStoryPreferences(preferencesData);
+    } catch (error) {
+      throw new Error("Failed to save user story preferences");
+    }
+  }
+
+  // AI Recommendations Caching Methods
+  async getCachedRecommendations(userId: string, preferences: any): Promise<any[]> {
+    try {
+      const db = this.db;
+      const cache = await db.collection('recommendation_cache').findOne({
+        userId,
+        preferencesHash: this.hashPreferences(preferences),
+        createdAt: { $gt: new Date(Date.now() - 24 * 60 * 60 * 1000) } // 24 hours cache
+      });
+      
+      return cache ? cache.recommendations : [];
+    } catch (error) {
+      console.error('Error getting cached recommendations:', error);
+      return [];
+    }
+  }
+
+  async saveCachedRecommendations(userId: string, recommendations: any[], preferences: any): Promise<void> {
+    try {
+      const db = this.db;
+      await db.collection('recommendation_cache').replaceOne(
+        { userId },
+        {
+          userId,
+          recommendations,
+          preferencesHash: this.hashPreferences(preferences),
+          createdAt: new Date()
+        },
+        { upsert: true }
+      );
+    } catch (error) {
+      console.error('Error saving cached recommendations:', error);
+    }
+  }
+
+  async clearCachedRecommendations(userId: string): Promise<void> {
+    try {
+      const db = this.db;
+      await db.collection('recommendation_cache').deleteMany({ userId });
+    } catch (error) {
+      console.error('Error clearing cached recommendations:', error);
+    }
+  }
+
+  // Helper method to hash preferences for caching
+  private hashPreferences(preferences: any): string {
+    const crypto = require('crypto');
+    const str = JSON.stringify({
+      interests: preferences.interests,
+      travelStyle: preferences.travelStyle,
+      preferredActivities: preferences.preferredActivities,
+      timeOfYear: preferences.timeOfYear
+    });
+    return crypto.createHash('md5').update(str).digest('hex');
   }
 }
 

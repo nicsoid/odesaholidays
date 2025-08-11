@@ -67,7 +67,7 @@ const STYLE_PROMPTS = {
 };
 
 export class AIStoryService {
-  async generateTravelStory(request: StoryGenerationRequest): Promise<GeneratedStory> {
+  async generateTravelStory(request: StoryGenerationRequest, language: string = 'en'): Promise<GeneratedStory> {
     const { location, mood = 'happy', style = 'casual', userContext, preferences } = request;
     
     // Build context about the location
@@ -77,7 +77,7 @@ export class AIStoryService {
     };
 
     // Create the prompt
-    const prompt = this.buildStoryPrompt(location, mood, style, locationContext, userContext, preferences);
+    const prompt = this.buildStoryPrompt(location, mood, style, locationContext, userContext, preferences, language);
 
     try {
       const response = await openai.chat.completions.create({
@@ -120,12 +120,19 @@ export class AIStoryService {
     style: string, 
     locationContext: any,
     userContext?: string,
-    preferences?: StoryPreferences
+    preferences?: StoryPreferences,
+    language: string = 'en'
   ): string {
     const maxHashtags = preferences?.maxHashtags || 10;
     const hashtagStyle = preferences?.preferredHashtagStyle || 'trendy';
     
+    const languageInstruction = language === 'uk' ? 
+      'Write the story and Instagram caption in Ukrainian language. Use Ukrainian text for the story and caption, but keep hashtags in English for maximum reach.' : 
+      'Write in English.';
+    
     return `Create a personalized travel story for Instagram about visiting ${location} in Odesa, Ukraine.
+
+LANGUAGE: ${languageInstruction}
 
 LOCATION CONTEXT: ${location}
 Keywords to include: ${locationContext.keywords.join(', ')}

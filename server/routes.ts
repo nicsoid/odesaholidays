@@ -778,6 +778,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Complete onboarding first" });
       }
 
+      // Check if we have cached recommendations for this user
+      const cachedRecommendations = await mongoStorage.getCachedRecommendations(userId, preferences);
+      if (cachedRecommendations && cachedRecommendations.length > 0) {
+        return res.json(cachedRecommendations);
+      }
+
       const userHistory = await mongoStorage.getUserStats(userId);
       const recommendations = await aiService.getPersonalizedLandmarkRecommendations(
         {
@@ -789,6 +795,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         userHistory?.landmarksVisited || []
       );
+
+      // Cache the recommendations
+      await mongoStorage.saveCachedRecommendations(userId, recommendations, preferences);
 
       res.json(recommendations);
     } catch (error: any) {
@@ -805,6 +814,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "User preferences not found" });
       }
 
+      // Clear cached recommendations first
+      await mongoStorage.clearCachedRecommendations(userId);
+
       const userHistory = await mongoStorage.getUserStats(userId);
       const recommendations = await aiService.getPersonalizedLandmarkRecommendations(
         {
@@ -816,6 +828,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         userHistory?.landmarksVisited || []
       );
+
+      // Cache the new recommendations
+      await mongoStorage.saveCachedRecommendations(userId, recommendations, preferences);
 
       res.json({ recommendations });
     } catch (error: any) {
@@ -979,6 +994,160 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(preferences);
     } catch (error: any) {
       console.error('Story preferences save error:', error);
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Travel Story Generation routes
+  app.post("/api/travel-stories/generate", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const { location, mood, style, userContext, preferences } = req.body;
+      
+      if (!location) {
+        return res.status(400).json({ message: "Location is required" });
+      }
+
+      // Get user's language preference for story generation
+      const userPreferences = await mongoStorage.getUserPreferences(userId);
+      const language = userPreferences?.language || 'en';
+
+      const storyService = new AIStoryService();
+      const generatedStory = await storyService.generateTravelStory(
+        { location, mood, style, userContext, preferences }, 
+        language
+      );
+
+      // Save the story to user's history
+      const storyData = {
+        userId,
+        location,
+        mood,
+        style,
+        userContext: userContext || '',
+        photoUrls: [],
+        title: generatedStory.title,
+        storyContent: generatedStory.story,
+        instagramCaption: generatedStory.instagramCaption,
+        hashtags: generatedStory.hashtags,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      const savedStory = await mongoStorage.createTravelStory(storyData);
+
+      res.json({
+        storyId: savedStory._id,
+        ...generatedStory
+      });
+    } catch (error: any) {
+      console.error('Travel story generation error:', error);
+      res.status(500).json({ message: "Failed to generate travel story" });
+    }
+  });
+
+  app.get("/api/travel-stories/user/:userId", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const requestedUserId = req.params.userId;
+      
+      // Users can only access their own stories
+      if (userId !== requestedUserId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const { page = 1, limit = 10 } = req.query;
+      const stories = await mongoStorage.getUserTravelStories(userId, parseInt(page), parseInt(limit));
+      res.json(stories);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/travel-stories/:storyId", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const { storyId } = req.params;
+      
+      const story = await mongoStorage.getTravelStory(storyId);
+      if (!story) {
+        return res.status(404).json({ message: "Story not found" });
+      }
+
+      // Users can only access their own stories
+      if (story.userId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      res.json(story);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/travel-stories/:storyId", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const { storyId } = req.params;
+      const updateData = req.body;
+
+      const story = await mongoStorage.getTravelStory(storyId);
+      if (!story) {
+        return res.status(404).json({ message: "Story not found" });
+      }
+
+      // Users can only update their own stories
+      if (story.userId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const updatedStory = await mongoStorage.updateTravelStory(storyId, updateData);
+      res.json(updatedStory);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/travel-stories/:storyId", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const { storyId } = req.params;
+
+      const story = await mongoStorage.getTravelStory(storyId);
+      if (!story) {
+        return res.status(404).json({ message: "Story not found" });
+      }
+
+      // Users can only delete their own stories
+      if (story.userId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      await mongoStorage.deleteTravelStory(storyId);
+      res.json({ message: "Story deleted successfully" });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Story Preferences routes
+  app.get("/api/story-preferences", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const preferences = await mongoStorage.getUserStoryPreferences(userId);
+      res.json(preferences);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/story-preferences", authenticateToken, async (req: any, res) => {
+    try {
+      const userId = req.user._id;
+      const preferencesData = { ...req.body, userId };
+      const preferences = await mongoStorage.saveUserStoryPreferences(preferencesData);
+      res.json(preferences);
+    } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
