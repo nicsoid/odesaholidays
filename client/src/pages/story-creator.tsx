@@ -69,7 +69,7 @@ const ODESA_LOCATIONS = [
 
 export default function StoryCreator() {
   const { isAuthenticated, user } = useAuth();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -101,6 +101,7 @@ export default function StoryCreator() {
       mood: string;
       style: string;
       userContext?: string;
+      language?: string;
     }) => {
       const response = await apiRequest("POST", "/api/stories/generate", data);
       return response.json();
@@ -174,6 +175,7 @@ export default function StoryCreator() {
       mood: selectedMood,
       style: selectedStyle,
       userContext: userContext || undefined,
+      language: language, // Pass current user language
     });
   };
 

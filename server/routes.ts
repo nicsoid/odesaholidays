@@ -948,7 +948,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Travel Story Generator routes
   app.post("/api/stories/generate", authenticateToken, async (req: any, res) => {
     try {
-      const { location, mood, style, userContext } = req.body;
+      const { location, mood, style, userContext, language } = req.body;
       
       if (!location) {
         return res.status(400).json({ message: "Location is required" });
@@ -963,7 +963,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         style: style || 'casual',
         userContext,
         preferences: preferences || undefined
-      });
+      }, language || 'en'); // Pass language parameter to AI service
 
       res.json(story);
     } catch (error: any) {

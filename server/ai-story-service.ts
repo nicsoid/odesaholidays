@@ -110,7 +110,7 @@ export class AIStoryService {
       console.error('Error generating story:', error);
       
       // Fallback story generation
-      return this.generateFallbackStory(location, mood, style);
+      return this.generateFallbackStory(location, mood, style, language);
     }
   }
 
@@ -160,18 +160,29 @@ Return a JSON object with:
 Make the story authentic, specific to Odesa's unique character (multicultural, coastal, historic), and optimized for Instagram engagement.`;
   }
 
-  private generateFallbackStory(location: string, mood: string, style: string): GeneratedStory {
-    const fallbackStories = {
+  private generateFallbackStory(location: string, mood: string, style: string, language: string = 'en'): GeneratedStory {
+    const fallbackStories = language === 'uk' ? {
+      happy: `Щойно провів найчудовіший день, досліджуючи ${location} в прекрасній Одесі! Це прибережне місто ніколи не перестає дивувати мене своєю приголомшливою архітектурою та теплою гостинністю.`,
+      romantic: `${location} в Одесі сьогодні створило ідеальний романтичний фон. Є щось магічне в цьому чорноморському прибережному місті, що робить кожну мить особливою.`,
+      adventurous: `Пригода покликала, і ${location} в Одесі відповіло! Дослідження цього історичного українського портового міста завжди є пригодою, сповненою відкриттів.`,
+      cultural: `Сьогодні занурювався в багату культурну спадщину ${location}. Багатокультурна історія Одеси оживає в кожному куточку цього величного міста.`
+    } : {
       happy: `Just spent the most amazing day exploring ${location} in beautiful Odesa! This coastal city never fails to surprise me with its stunning architecture and warm hospitality.`,
       romantic: `${location} in Odesa provided the perfect romantic backdrop today. There's something magical about this Black Sea coastal city that makes every moment feel special.`,
       adventurous: `Adventure called, and ${location} in Odesa answered! Exploring this historic Ukrainian port city is always an adventure filled with discoveries.`,
       cultural: `Immersing myself in the rich cultural heritage at ${location} today. Odesa's multicultural history comes alive in every corner of this magnificent city.`
     };
 
+    const title = language === 'uk' ? `Відкриваючи ${location}` : `Discovering ${location}`;
+    const caption = language === 'uk' ? 
+      `Ще один дивовижний день в Одесі! ${location} було абсолютно неймовірним. #ОдесаЖиття #Україна` :
+      `Another amazing day in Odesa! ${location} was absolutely incredible. #OdesaLife #Ukraine`;
+
     return {
-      title: `Discovering ${location}`,
-      story: fallbackStories[mood as keyof typeof fallbackStories] || `Exploring the beauty of ${location} in Odesa, Ukraine.`,
-      instagramCaption: `Another amazing day in Odesa! ${location} was absolutely incredible. #OdesaLife #Ukraine`,
+      title,
+      story: fallbackStories[mood as keyof typeof fallbackStories] || 
+        (language === 'uk' ? `Досліджуючи красу ${location} в Одесі, Україна.` : `Exploring the beauty of ${location} in Odesa, Ukraine.`),
+      instagramCaption: caption,
       hashtags: this.generateFallbackHashtags(location, mood),
       mood,
       style

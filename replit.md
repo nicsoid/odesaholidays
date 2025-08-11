@@ -61,4 +61,5 @@ The application follows a monorepo structure with shared TypeScript schemas betw
 - **AI Story Creator Enhancement**: Improved form field visibility with proper borders and fixed button enabling by setting valid default selections
 - **Subscription Model Update**: Implemented simplified pricing structure with $2.99/week and $5.99/month plans for unlimited digital postcards and AI stories
 - **Instagram Sharing Integration**: Added direct Instagram sharing functionality allowing users to share AI-generated stories with photos directly to Instagram app (mobile) or web (desktop) with automatic caption copying
+- **Language-Aware AI Stories**: Implemented multilingual AI story generation - Ukrainian users receive stories in Ukrainian while English users get English stories, with proper fallback handling
 - **UI Polish**: Enhanced Ukrainian color theming throughout the application with proper contrast and accessibility improvements
