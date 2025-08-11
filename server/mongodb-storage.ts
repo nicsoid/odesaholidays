@@ -1010,8 +1010,8 @@ export class MongoStorage implements IMongoStorage {
   // AI Recommendations Caching Methods
   async getCachedRecommendations(userId: string, preferences: any): Promise<any[]> {
     try {
-      const db = this.db;
-      const cache = await db.collection('recommendation_cache').findOne({
+      const database = getDatabase();
+      const cache = await database.collection('recommendation_cache').findOne({
         userId,
         preferencesHash: this.hashPreferences(preferences),
         createdAt: { $gt: new Date(Date.now() - 24 * 60 * 60 * 1000) } // 24 hours cache
@@ -1026,8 +1026,8 @@ export class MongoStorage implements IMongoStorage {
 
   async saveCachedRecommendations(userId: string, recommendations: any[], preferences: any): Promise<void> {
     try {
-      const db = this.db;
-      await db.collection('recommendation_cache').replaceOne(
+      const database = getDatabase();
+      await database.collection('recommendation_cache').replaceOne(
         { userId },
         {
           userId,
@@ -1044,8 +1044,8 @@ export class MongoStorage implements IMongoStorage {
 
   async clearCachedRecommendations(userId: string): Promise<void> {
     try {
-      const db = this.db;
-      await db.collection('recommendation_cache').deleteMany({ userId });
+      const database = getDatabase();
+      await database.collection('recommendation_cache').deleteMany({ userId });
     } catch (error) {
       console.error('Error clearing cached recommendations:', error);
     }

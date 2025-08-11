@@ -26,7 +26,7 @@ export default function Register() {
       return response.json();
     },
     onSuccess: (data) => {
-      localStorage.setItem("auth_token", data.token);
+      localStorage.setItem("odesa_auth_token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       
       // Invalidate auth queries to refresh the user state
