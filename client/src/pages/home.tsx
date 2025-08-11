@@ -78,26 +78,40 @@ export default function Home() {
               <p className="text-xl mb-8 text-blue-100 leading-relaxed">
                 {t('home.hero.subtitle')}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                {isAuthenticated && userPreferences && !(userPreferences as any)?.completedOnboarding ? (
-                  <Link href="/onboarding">
-                    <Button size="lg" className="bg-sunflower text-gray-900 hover:bg-yellow-400 text-lg px-8 py-4 h-auto shadow-lg transform hover:scale-105 transition-all">
-                      <Sparkles className="mr-2 h-5 w-5" />
-                      Complete Setup
-                    </Button>
-                  </Link>
-                ) : (
-                  <Link href="/creator">
-                    <Button size="lg" className="bg-sunflower text-gray-900 hover:bg-yellow-400 text-lg px-8 py-4 h-auto shadow-lg transform hover:scale-105 transition-all">
-                      <Sparkles className="mr-2 h-5 w-5" />
-                      {t('home.hero.createButton')}
-                    </Button>
-                  </Link>
-                )}
-                <Button variant="outline" size="lg" className="border-2 border-yellow-300 bg-transparent text-yellow-300 hover:bg-yellow-300 hover:text-blue-700 text-lg px-8 py-4 h-auto">
-                  <Play className="mr-2 h-5 w-5" />
-                  {t('home.hero.watchDemo')}
-                </Button>
+              <div className="flex flex-col sm:flex-row gap-4 mb-8 max-w-none">
+                <div className="flex-shrink-0">
+                  {isAuthenticated && userPreferences && !(userPreferences as any)?.completedOnboarding ? (
+                    <Link href="/onboarding">
+                      <Button size="lg" className="bg-sunflower text-gray-900 hover:bg-yellow-400 text-lg px-8 py-4 h-auto shadow-lg transform hover:scale-105 transition-all w-full sm:w-auto">
+                        <Sparkles className="mr-2 h-5 w-5" />
+                        Complete Setup
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Link href="/creator">
+                      <Button size="lg" className="bg-sunflower text-gray-900 hover:bg-yellow-400 text-lg px-8 py-4 h-auto shadow-lg transform hover:scale-105 transition-all w-full sm:w-auto">
+                        <Sparkles className="mr-2 h-5 w-5" />
+                        {t('home.hero.createButton')}
+                      </Button>
+                    </Link>
+                  )}
+                </div>
+                <div className="flex-shrink-0">
+                  <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className="border-2 border-yellow-300 bg-transparent text-yellow-300 hover:bg-yellow-300 hover:text-blue-700 text-lg px-8 py-4 h-auto w-full sm:w-auto"
+                    onClick={() => {
+                      const demoElement = document.getElementById('demo-section');
+                      if (demoElement) {
+                        demoElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }
+                    }}
+                  >
+                    <Play className="mr-2 h-5 w-5" />
+                    {t('home.hero.watchDemo')}
+                  </Button>
+                </div>
               </div>
               <div className="flex items-center text-blue-100">
                 <Gift className="mr-2 h-5 w-5 text-sunflower" />
@@ -181,6 +195,67 @@ export default function Home() {
                 <p className="text-gray-600">{t('home.features.printing.description')}</p>
               </CardContent>
             </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Demo Section */}
+      <section id="demo-section" className="py-20 bg-gradient-to-br from-blue-50 to-blue-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="font-playfair text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+              {t('home.demo.title')}
+            </h2>
+            <p className="text-xl text-gray-600 mb-8">
+              {t('home.demo.subtitle')}
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Step 1 */}
+            <div className="text-center">
+              <div className="bg-ukrainian-blue text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
+                1
+              </div>
+              <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <Image className="h-12 w-12 text-ukrainian-blue mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">{t('home.demo.step1.title')}</h3>
+                <p className="text-gray-600">{t('home.demo.step1.description')}</p>
+              </div>
+            </div>
+            
+            {/* Step 2 */}
+            <div className="text-center">
+              <div className="bg-sunflower text-gray-900 w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
+                2
+              </div>
+              <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <Edit className="h-12 w-12 text-sunflower mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">{t('home.demo.step2.title')}</h3>
+                <p className="text-gray-600">{t('home.demo.step2.description')}</p>
+              </div>
+            </div>
+            
+            {/* Step 3 */}
+            <div className="text-center">
+              <div className="bg-sunset-orange text-white w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-6">
+                3
+              </div>
+              <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+                <Share2 className="h-12 w-12 text-sunset-orange mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">{t('home.demo.step3.title')}</h3>
+                <p className="text-gray-600">{t('home.demo.step3.description')}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="text-center mt-12">
+            <Link href="/creator">
+              <Button size="lg" className="bg-ukrainian-blue hover:bg-blue-700 text-white text-lg px-8 py-4 h-auto">
+                <Sparkles className="mr-2 h-5 w-5" />
+                {t('home.demo.cta')}
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

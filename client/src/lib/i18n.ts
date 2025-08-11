@@ -144,6 +144,15 @@ interface TranslationKeys {
   'home.pricing.upgrade': string;
   'home.pricing.bulk': string;
   'home.pricing.contact': string;
+  'home.demo.title': string;
+  'home.demo.subtitle': string;
+  'home.demo.step1.title': string;
+  'home.demo.step1.description': string;
+  'home.demo.step2.title': string;
+  'home.demo.step2.description': string;
+  'home.demo.step3.title': string;
+  'home.demo.step3.description': string;
+  'home.demo.cta': string;
   'home.gallery.title': string;
   'home.gallery.subtitle': string;
   'home.stats.postcards': string;
@@ -361,6 +370,15 @@ const translations: Record<Language, TranslationKeys> = {
     'home.pricing.upgrade': 'Оновитись до преміум',
     'home.pricing.bulk': 'Потрібні оптові замовлення для вашого бізнесу чи заходу?',
     'home.pricing.contact': 'Зв\'яжіться з нами для індивідуального ціноутворення',
+    'home.demo.title': 'Як це працює',
+    'home.demo.subtitle': 'Створюйте красиві листівки всього за 3 простих кроки',
+    'home.demo.step1.title': 'Оберіть шаблон',
+    'home.demo.step1.description': 'Виберіть з красивих шаблонів пам\'яток Одеси',
+    'home.demo.step2.title': 'Налаштуйте',
+    'home.demo.step2.description': 'Додайте своє повідомлення, виберіть кольори та шрифти',
+    'home.demo.step3.title': 'Поділіться та надрукуйте',
+    'home.demo.step3.description': 'Завантажте, поділіться в соцмережах або замовте друк',
+    'home.demo.cta': 'Спробуйте зараз - це безкоштовно!',
     'home.gallery.title': 'Створено мандрівниками, такими як ви',
     'home.gallery.subtitle': 'Приєднуйтесь до тисяч щасливих туристів, які діляться своїми спогадами про Одесу.',
     'home.stats.postcards': 'створених листівок',
@@ -576,6 +594,15 @@ const translations: Record<Language, TranslationKeys> = {
     'home.pricing.upgrade': 'Upgrade to Premium',
     'home.pricing.bulk': 'Need bulk orders for your business or event?',
     'home.pricing.contact': 'Contact us for custom pricing',
+    'home.demo.title': 'See How It Works',
+    'home.demo.subtitle': 'Create beautiful postcards in just 3 simple steps',
+    'home.demo.step1.title': 'Choose Template',
+    'home.demo.step1.description': 'Select from beautiful Odesa landmark templates',
+    'home.demo.step2.title': 'Customize',
+    'home.demo.step2.description': 'Add your message, choose colors and fonts',
+    'home.demo.step3.title': 'Share & Print',
+    'home.demo.step3.description': 'Download, share on social media, or order prints',
+    'home.demo.cta': 'Try It Now - It\'s Free!',
     'home.gallery.title': 'Created by Travelers Like You',
     'home.gallery.subtitle': 'Join thousands of happy tourists sharing their Odesa memories.',
     'home.stats.postcards': 'postcards created',
