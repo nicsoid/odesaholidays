@@ -293,6 +293,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user's postcards (authenticated route)
+  app.get("/api/postcards/user", authenticateToken, async (req: any, res) => {
+    try {
+      const postcards = await mongoStorage.getUserPostcards(req.user._id);
+      res.json(postcards);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   app.get("/api/postcards/public/gallery", async (req, res) => {
     try {
       const { limit = 20 } = req.query;
@@ -443,10 +453,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user's orders (authenticated route)
+  app.get("/api/orders/user", authenticateToken, async (req: any, res) => {
+    try {
+      const orders = await mongoStorage.getUserOrders(req.user._id);
+      res.json(orders);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Analytics
   app.get("/api/analytics/user/:userId", async (req, res) => {
     try {
       const analytics = await storage.getUserAnalytics(parseInt(req.params.userId));
+      res.json(analytics);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get user's analytics (authenticated route)
+  app.get("/api/analytics/user", authenticateToken, async (req: any, res) => {
+    try {
+      const analytics = await mongoStorage.getUserAnalytics(req.user._id);
       res.json(analytics);
     } catch (error: any) {
       res.status(500).json({ message: error.message });

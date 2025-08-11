@@ -315,7 +315,7 @@ export default function StoryCreator() {
                     placeholder="Add personal details you'd like included in your story (e.g., traveling with friends, celebrating anniversary, first time visiting, etc.)"
                     value={userContext}
                     onChange={(e) => setUserContext(e.target.value)}
-                    className="resize-none"
+                    className="resize-none border-gray-300 focus:border-ukrainian-blue focus:ring-ukrainian-blue"
                     rows={3}
                   />
                 </div>
@@ -365,7 +365,7 @@ export default function StoryCreator() {
                 <Button
                   onClick={handleGenerateStory}
                   disabled={!selectedLocation || !selectedMood || !selectedStyle || isGenerating}
-                  className="w-full bg-ukrainian-blue hover:bg-blue-700"
+                  className="w-full bg-ukrainian-blue hover:bg-blue-700 text-white"
                   size="lg"
                 >
                   {isGenerating ? (

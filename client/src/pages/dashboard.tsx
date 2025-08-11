@@ -27,15 +27,15 @@ export default function Dashboard() {
   const [referralCode] = useState("REF000001"); // In real app, get from user data
   
   const { data: analytics = [] } = useQuery<Analytics[]>({
-    queryKey: ["/api/analytics/user/1"], // In real app, use actual user ID
+    queryKey: ["/api/analytics/user"],
   });
 
   const { data: userPostcards = [] } = useQuery<Postcard[]>({
-    queryKey: ["/api/postcards/user/1"], // In real app, use actual user ID
+    queryKey: ["/api/postcards/user"],
   });
 
   const { data: userOrders = [] } = useQuery<Order[]>({
-    queryKey: ["/api/orders/user/1"], // In real app, use actual user ID
+    queryKey: ["/api/orders/user"],
   });
 
   const { data: popularTemplates = [] } = useQuery<Template[]>({

@@ -761,6 +761,35 @@ export class MongoStorage implements IMongoStorage {
     }
   }
 
+  // User dashboard methods
+  async getUserPostcards(userId: string): Promise<Postcard[]> {
+    try {
+      const postcards = await this.postcards.find({ userId }).toArray();
+      return postcards.map(p => ({ ...p, _id: p._id.toString() })) as Postcard[];
+    } catch (error) {
+      throw new Error("Failed to get user postcards");
+    }
+  }
+
+  async getUserOrders(userId: string): Promise<Order[]> {
+    try {
+      const orders = await this.orders.find({ userId }).toArray();
+      return orders.map(o => ({ ...o, _id: o._id.toString() })) as Order[];
+    } catch (error) {
+      throw new Error("Failed to get user orders");
+    }
+  }
+
+  async getUserAnalytics(userId: string): Promise<any[]> {
+    try {
+      const db = await getDatabase();
+      const collection = db.collection('analytics');
+      return await collection.find({ userId }).toArray();
+    } catch (error) {
+      return []; // Return empty array if no analytics found
+    }
+  }
+
   // Onboarding & AI Features
   async createUserPreferences(preferencesData: InsertUserPreferences): Promise<UserPreferences> {
     try {

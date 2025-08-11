@@ -92,10 +92,56 @@ export default function Subscription() {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
 
-  // Get available subscription plans
-  const { data: plans = [], isLoading: plansLoading } = useQuery<SubscriptionPlan[]>({
-    queryKey: ["/api/subscription/plans"],
-  });
+  // Define the new simplified pricing plans
+  const simplifiedPlans: SubscriptionPlan[] = [
+    {
+      id: "free",
+      name: "Free Plan",
+      description: "Perfect for trying out digital postcards",
+      monthlyPrice: 0,
+      features: [
+        "20 free digital postcards",
+        "Basic Odesa templates",
+        "Standard quality downloads",
+        "Community support"
+      ],
+      stripePriceId: ""
+    },
+    {
+      id: "weekly",
+      name: "Weekly Plan",
+      description: "Great for active travelers and storytellers",
+      monthlyPrice: 2.99,
+      features: [
+        "Unlimited digital postcards",
+        "AI-powered travel stories",
+        "All premium templates",
+        "High-quality downloads",
+        "Instagram-ready formats",
+        "Priority support"
+      ],
+      stripePriceId: "price_weekly_299"
+    },
+    {
+      id: "monthly", 
+      name: "Monthly Plan",
+      description: "Best value for postcard enthusiasts",
+      monthlyPrice: 5.99,
+      features: [
+        "Everything in Weekly Plan",
+        "Advanced AI customization", 
+        "Exclusive landmark templates",
+        "Unlimited story generations",
+        "Custom branding options",
+        "Premium support"
+      ],
+      stripePriceId: "price_monthly_599"
+    }
+  ];
+
+  // Use simplified plans instead of API call
+  const plans = simplifiedPlans;
+  const plansLoading = false;
 
   // Get user's current subscription status
   const { data: subscriptionStatus, isLoading: statusLoading } = useQuery<SubscriptionStatus>({
@@ -248,29 +294,35 @@ export default function Subscription() {
       <div className="max-w-6xl mx-auto px-4">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold text-blue-900 dark:text-blue-100 mb-4">
-            Unlimited Postcards
+            Choose Your Plan
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Subscribe to send unlimited physical postcards to your loved ones. 
-            Perfect for frequent travelers and postcard enthusiasts.
+            Start with 20 free digital postcards, then upgrade for unlimited creations and AI stories.
+            Physical postcards available with shipping costs.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {plans.map((plan: SubscriptionPlan) => (
-            <Card key={plan.id} className="relative border-2 hover:border-blue-300 transition-all">
-              {plan.name.toLowerCase().includes('premium') && (
-                <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-yellow-900">
-                  Most Popular
+            <Card key={plan.id} className={`relative border-2 hover:border-blue-300 transition-all ${
+              plan.id === 'monthly' ? 'border-ukrainian-blue ring-2 ring-blue-100' : ''
+            }`}>
+              {plan.id === 'monthly' && (
+                <Badge className="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-sunflower text-black">
+                  Best Value
                 </Badge>
               )}
               
               <CardHeader>
                 <CardTitle className="text-xl">{plan.name}</CardTitle>
                 <CardDescription>{plan.description}</CardDescription>
-                <div className="text-3xl font-bold text-blue-600">
-                  ${plan.monthlyPrice}
-                  <span className="text-sm font-normal text-gray-500">/month</span>
+                <div className="text-3xl font-bold text-ukrainian-blue">
+                  {plan.monthlyPrice === 0 ? 'Free' : `$${plan.monthlyPrice}`}
+                  {plan.monthlyPrice > 0 && (
+                    <span className="text-sm font-normal text-gray-500">
+                      {plan.id === 'weekly' ? '/week' : '/month'}
+                    </span>
+                  )}
                 </div>
               </CardHeader>
               
@@ -286,16 +338,30 @@ export default function Subscription() {
               </CardContent>
               
               <CardFooter>
-                <Button
-                  onClick={() => handleSubscribe(plan.id)}
-                  disabled={createSubscriptionMutation.isPending}
-                  className="w-full bg-blue-600 hover:bg-blue-700"
-                >
-                  {createSubscriptionMutation.isPending && selectedPlan === plan.id
-                    ? "Setting up..."
-                    : "Subscribe Now"
-                  }
-                </Button>
+                {plan.id === 'free' ? (
+                  <Button
+                    disabled
+                    variant="outline"
+                    className="w-full"
+                  >
+                    Current Plan
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => handleSubscribe(plan.id)}
+                    disabled={createSubscriptionMutation.isPending}
+                    className={`w-full ${
+                      plan.id === 'monthly' 
+                        ? 'bg-ukrainian-blue hover:bg-blue-700' 
+                        : 'bg-gray-600 hover:bg-gray-700'
+                    }`}
+                  >
+                    {createSubscriptionMutation.isPending && selectedPlan === plan.id
+                      ? "Creating..."
+                      : `Subscribe - $${plan.monthlyPrice}${plan.id === 'weekly' ? '/week' : '/month'}`
+                    }
+                  </Button>
+                )}
               </CardFooter>
             </Card>
           ))}
