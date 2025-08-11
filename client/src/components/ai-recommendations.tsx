@@ -204,21 +204,23 @@ export default function AIRecommendations() {
                           {rec.category}
                         </Badge>
                       </div>
-                      <Link href={`/creator?landmark=${encodeURIComponent(rec.name)}`}>
-                        <Button 
-                          size="sm" 
-                          className="bg-ukrainian-blue hover:bg-blue-700 text-white"
-                          onClick={() => {
-                            toast({
-                              title: "Loading Postcard Creator",
-                              description: `Setting up your ${rec.name} postcard...`,
-                            });
-                          }}
-                        >
-                          <Eye className="h-3 w-3 mr-1" />
-                          Create Postcard
-                        </Button>
-                      </Link>
+                      <Button 
+                        size="sm" 
+                        className="bg-ukrainian-blue hover:bg-blue-700 text-white"
+                        onClick={() => {
+                          toast({
+                            title: "Loading Postcard Creator",
+                            description: `Setting up your ${rec.name} postcard...`,
+                          });
+                          // Use window navigation to ensure proper page load
+                          setTimeout(() => {
+                            window.location.href = `/creator?landmark=${encodeURIComponent(rec.name)}`;
+                          }, 500);
+                        }}
+                      >
+                        <Eye className="h-3 w-3 mr-1" />
+                        Create Postcard
+                      </Button>
                     </div>
                   </CardHeader>
                   

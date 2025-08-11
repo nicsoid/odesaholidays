@@ -50,6 +50,7 @@ export default function Creator() {
   const [notification, setNotification] = useState<{message: string, type: 'success' | 'error' | 'info', isVisible: boolean}>({
     message: '', type: 'info', isVisible: false
   });
+  const [landmarkImagesLoaded, setLandmarkImagesLoaded] = useState(false);
   
   const sounds = useSoundEffects();
 
@@ -176,20 +177,19 @@ export default function Creator() {
 
   // Handle landmark parameter from AI recommendations
   useEffect(() => {
-    if (landmarkParam && templates.length > 0 && !selectedTemplate) {
+    if (landmarkParam && templates.length > 0 && !selectedTemplate && !landmarkImagesLoaded) {
       // Try to find a template that matches the landmark
       const matchingTemplate = templates.find(t => 
         t.name.toLowerCase().includes(landmarkParam.toLowerCase()) ||
         t.description?.toLowerCase().includes(landmarkParam.toLowerCase())
-      );
+      ) || templates[0]; // Fallback to first template if no match
       
-      if (matchingTemplate) {
-        setSelectedTemplate(matchingTemplate);
-        sounds.select();
-      }
+      setSelectedTemplate(matchingTemplate);
+      sounds.select();
       
-      // Load relevant images for the landmark
+      // Load relevant images for the landmark - only once
       fetchLandmarkImages(landmarkParam);
+      setLandmarkImagesLoaded(true);
       
       // Show notification about AI suggestion
       setNotification({ 
@@ -199,7 +199,7 @@ export default function Creator() {
       });
       setTimeout(() => setNotification(prev => ({ ...prev, isVisible: false })), 4000);
     }
-  }, [landmarkParam, templates, selectedTemplate, sounds]);
+  }, [landmarkParam, templates.length, selectedTemplate, landmarkImagesLoaded, sounds]);
 
   const fetchLandmarkImages = async (landmark: string) => {
     try {
