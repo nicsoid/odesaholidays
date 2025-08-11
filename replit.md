@@ -57,3 +57,7 @@ The application follows a monorepo structure with shared TypeScript schemas betw
 - **Language Switcher**: Added flag-based language toggle in navigation with Ukrainian as default language
 - **AI Integration**: Enhanced AI recommendations with proper navigation and fixed infinite loop issues
 - **Translation Coverage**: Navigation, AI recommendations, authentication flows, and core UI components fully translated
+- **Dashboard Statistics Fix**: Added proper authenticated API routes and MongoDB methods for user postcards, orders, and analytics display
+- **AI Story Creator Enhancement**: Improved form field visibility with proper borders and fixed button enabling by setting valid default selections
+- **Subscription Model Update**: Implemented simplified pricing structure with $2.99/week and $5.99/month plans for unlimited digital postcards and AI stories
+- **UI Polish**: Enhanced Ukrainian color theming throughout the application with proper contrast and accessibility improvements

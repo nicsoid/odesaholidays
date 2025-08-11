@@ -74,7 +74,7 @@ export default function StoryCreator() {
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [selectedLocation, setSelectedLocation] = useState<string>('');
+  const [selectedLocation, setSelectedLocation] = useState<string>('Potemkin Steps');
   const [selectedMood, setSelectedMood] = useState<string>('happy');
   const [selectedStyle, setSelectedStyle] = useState<string>('casual');
   const [userContext, setUserContext] = useState<string>('');
