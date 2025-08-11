@@ -205,9 +205,18 @@ export default function AIRecommendations() {
                         </Badge>
                       </div>
                       <Link href={`/creator?landmark=${encodeURIComponent(rec.name)}`}>
-                        <Button size="sm" variant="outline">
+                        <Button 
+                          size="sm" 
+                          className="bg-ukrainian-blue hover:bg-blue-700 text-white"
+                          onClick={() => {
+                            toast({
+                              title: "Loading Postcard Creator",
+                              description: `Setting up your ${rec.name} postcard...`,
+                            });
+                          }}
+                        >
                           <Eye className="h-3 w-3 mr-1" />
-                          Create
+                          Create Postcard
                         </Button>
                       </Link>
                     </div>

@@ -30,11 +30,15 @@ export default function Creator() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  
+  // Get URL parameters for landmark suggestions
+  const urlParams = new URLSearchParams(window.location.search);
+  const landmarkParam = urlParams.get('landmark');
 
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [postcardData, setPostcardData] = useState<Partial<InsertPostcard>>({
-    title: "Greetings from Odesa!",
-    message: "Having an amazing time exploring this beautiful coastal city!",
+    title: landmarkParam ? `Greetings from ${landmarkParam}!` : "Greetings from Odesa!",
+    message: landmarkParam ? `Having an amazing time exploring ${landmarkParam} in this beautiful coastal city!` : "Having an amazing time exploring this beautiful coastal city!",
     fontFamily: "Inter",
     backgroundColor: "#FFFFFF",
     textColor: "#000000",
@@ -169,6 +173,49 @@ export default function Creator() {
       }
     }
   }, [sharedPostcard, templates]);
+
+  // Handle landmark parameter from AI recommendations
+  useEffect(() => {
+    if (landmarkParam && templates.length > 0 && !selectedTemplate) {
+      // Try to find a template that matches the landmark
+      const matchingTemplate = templates.find(t => 
+        t.name.toLowerCase().includes(landmarkParam.toLowerCase()) ||
+        t.description?.toLowerCase().includes(landmarkParam.toLowerCase())
+      );
+      
+      if (matchingTemplate) {
+        setSelectedTemplate(matchingTemplate);
+        sounds.select();
+      }
+      
+      // Load relevant images for the landmark
+      fetchLandmarkImages(landmarkParam);
+      
+      // Show notification about AI suggestion
+      setNotification({ 
+        message: `AI suggested: Creating postcard for ${landmarkParam}`, 
+        type: 'info', 
+        isVisible: true 
+      });
+      setTimeout(() => setNotification(prev => ({ ...prev, isVisible: false })), 4000);
+    }
+  }, [landmarkParam, templates, selectedTemplate, sounds]);
+
+  const fetchLandmarkImages = async (landmark: string) => {
+    try {
+      const response = await apiRequest("GET", `/api/images/search?query=${encodeURIComponent(landmark)}`);
+      const data = await response.json();
+      if (data.images && data.images.length > 0) {
+        // Set the first image as custom image URL
+        setPostcardData(prev => ({
+          ...prev,
+          customImageUrl: data.images[0].url
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch landmark images:', error);
+    }
+  };
 
   const handleTemplateSelect = (template: Template) => {
     setSelectedTemplate(template);

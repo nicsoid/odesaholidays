@@ -822,6 +822,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Image search for landmarks
+  app.get("/api/images/search", async (req, res) => {
+    try {
+      const { query } = req.query as { query: string };
+      if (!query) {
+        return res.status(400).json({ message: "Query parameter required" });
+      }
+
+      // Fallback to placeholder images with relevant landmarks
+      const placeholderImages = [
+        {
+          id: '1',
+          url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&q=80',
+          thumb: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&q=80',
+          alt: `${query} landmark`,
+          author: 'Unsplash',
+          downloadUrl: '#'
+        },
+        {
+          id: '2', 
+          url: 'https://images.unsplash.com/photo-1564594985645-4427056bad51?w=800&q=80',
+          thumb: 'https://images.unsplash.com/photo-1564594985645-4427056bad51?w=400&q=80',
+          alt: `${query} architecture`,
+          author: 'Unsplash',
+          downloadUrl: '#'
+        }
+      ];
+      
+      res.json({ images: placeholderImages });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Social media preview routes
   app.post("/api/social-media/generate", authenticateToken, async (req: any, res) => {
     try {
