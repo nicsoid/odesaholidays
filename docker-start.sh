@@ -6,7 +6,7 @@ echo "🚀 Starting Odesa Holiday Postcards App..."
 
 # Wait for MongoDB
 echo "⏳ Waiting for MongoDB..."
-until mongosh --host mongodb:27017 --username admin --password password123 --authenticationDatabase admin --eval "print('MongoDB is ready')" > /dev/null 2>&1; do
+until mongosh --host mongodb:27017 --username admin --password password --authenticationDatabase admin --eval "print('MongoDB is ready')" > /dev/null 2>&1; do
   echo "MongoDB is unavailable - sleeping"
   sleep 2
 done

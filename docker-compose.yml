@@ -10,7 +10,7 @@ services:
       - "27017:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password123
+      - MONGO_INITDB_ROOT_PASSWORD=password
       - MONGO_INITDB_DATABASE=odesa-holiday
     volumes:
       - mongodb_data:/data/db
@@ -41,7 +41,7 @@ services:
       - NODE_ENV=production
       - HOST=0.0.0.0
       - PORT=5000
-      - MONGODB_URI=mongodb://admin:password123@mongodb:27017/odesa-holiday?authSource=admin
+      - MONGODB_URI=mongodb://admin:password@mongodb:27017/odesa-holiday?authSource=admin
       - DATABASE_URL=postgresql://postgres:password123@postgres:5432/odesa_holiday
       - JWT_SECRET=${JWT_SECRET}
       - SENDGRID_API_KEY=${SENDGRID_API_KEY}

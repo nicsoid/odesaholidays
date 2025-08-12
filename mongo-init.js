@@ -5,7 +5,7 @@ db = db.getSiblingDB('odesa-holiday');
 // Create a user for the application
 db.createUser({
   user: "app",
-  pwd: "password123",
+  pwd: "password",
   roles: [
     {
       role: "readWrite",
