@@ -24,7 +24,7 @@ services:
     environment:
       - POSTGRES_DB=odesa_holiday
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password123
+      - POSTGRES_PASSWORD=password
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -41,7 +41,7 @@ services:
       - HOST=0.0.0.0
       - PORT=5001
       - MONGODB_URI=mongodb://admin:password@mongodb:27017/odesa-holiday?authSource=admin
-      - DATABASE_URL=postgresql://postgres:password123@postgres:5432/odesa_holiday
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/odesa_holiday
       - JWT_SECRET=${JWT_SECRET}
       - SENDGRID_API_KEY=${SENDGRID_API_KEY}
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
