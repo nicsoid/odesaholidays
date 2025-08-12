@@ -1,0 +1,64 @@
+Enkrypt: Hello from IN
+index-_m8GoREW.js:425 Uncaught Error: Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY
+    at index-_m8GoREW.js:425:19191
+(anonymous) @ index-_m8GoREW.js:425
+inpage.js:2289 Uncaught (in promise) TypeError: Cannot read properties of null (reading 'type')
+    at fm.<anonymous> (inpage.js:2289:37281)
+    at Generator.next (<anonymous>)
+    at be (inpage.js:2289:36169)
+(anonymous) @ inpage.js:2289
+be @ inpage.js:2289
+Promise.then
+At @ inpage.js:2289
+be @ inpage.js:2289
+Promise.then
+At @ inpage.js:2289
+(anonymous) @ inpage.js:2289
+kc @ inpage.js:2289
+boot @ inpage.js:2289
+(anonymous) @ inpage.js:2289
+setTimeout
+start @ inpage.js:2289
+(anonymous) @ inpage.js:2289
+start @ inpage.js:2289
+(anonymous) @ inpage.js:2313
+(anonymous) @ inpage.js:2313
+UU @ inpage.js:2313
+FU @ inpage.js:2313
+(anonymous) @ inpage.js:2313
+(anonymous) @ inpage.js:2313
+(anonymous) @ inpage.js:2313
+inpage.js:2116 [Report Only] Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self'".
+
+inpage.js:2116 [Report Only] Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive: "script-src 'self'".
+
+inpage.js:2289 Uncaught (in promise) TypeError: Cannot read properties of null (reading 'type')
+    at fm.<anonymous> (inpage.js:2289:37281)
+    at Generator.next (<anonymous>)
+    at be (inpage.js:2289:36169)
+(anonymous) @ inpage.js:2289
+be @ inpage.js:2289
+Promise.then
+At @ inpage.js:2289
+be @ inpage.js:2289
+Promise.then
+At @ inpage.js:2289
+(anonymous) @ inpage.js:2289
+kc @ inpage.js:2289
+boot @ inpage.js:2289
+(anonymous) @ inpage.js:2289
+setTimeout
+start @ inpage.js:2289
+(anonymous) @ inpage.js:2289
+start @ inpage.js:2289
+(anonymous) @ inpage.js:2313
+(anonymous) @ inpage.js:2313
+UU @ inpage.js:2313
+FU @ inpage.js:2313
+(anonymous) @ inpage.js:2313
+(anonymous) @ inpage.js:2313
+(anonymous) @ inpage.js:2313
+inpage.js:2289 Uncaught (in promise) TypeError: Cannot read properties of null (reading 'type')
+    at fm.<anonymous> (inpage.js:2289:37281)
+    at Generator.next (<anonymous>)
+    at be (inpage.js:2289:36169)
