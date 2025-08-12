@@ -81,25 +81,16 @@ app.use((req, res, next) => {
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
   if (app.get("env") === "development") {
+    const viteModule = "./vite.js";
     try {
-      const { setupVite } = await import("./vite");
+      const { setupVite } = await import(viteModule);
       await setupVite(app, server);
     } catch (error) {
-      log("Failed to load Vite module, falling back to static serving");
-      // Fallback to production behavior if vite module is not available
-      const fs = await import("fs");
-      const path = await import("path");
-      
-      const distPath = path.resolve(import.meta.dirname, "public");
-      
-      if (fs.existsSync(distPath)) {
-        app.use(express.static(distPath));
-        app.use("*", (_req, res) => {
-          res.sendFile(path.resolve(distPath, "index.html"));
-        });
-      }
+      log("Vite module not available in production, using static serving");
     }
-  } else {
+  }
+  
+  if (app.get("env") !== "development") {
     // Production static file serving (avoiding vite module dependency)
     const fs = await import("fs");
     const path = await import("path");
