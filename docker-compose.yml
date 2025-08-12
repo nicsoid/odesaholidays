@@ -2,15 +2,47 @@
 version: '3.8'
 
 services:
+  mongodb:
+    image: mongo:7
+    container_name: odesa-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password123
+      - MONGO_INITDB_DATABASE=odesa-holiday
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  postgres:
+    image: postgres:15
+    container_name: odesa-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=odesa_holiday
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   app:
     build: .
+    container_name: odesa-app
     ports:
       - "5000:5000"
+    depends_on:
+      - mongodb
+      - postgres
     environment:
       - NODE_ENV=production
       - HOST=0.0.0.0
       - PORT=5000
-      - MONGODB_URI=${MONGODB_URI}
+      - MONGODB_URI=mongodb://admin:password123@mongodb:27017/odesa-holiday?authSource=admin
+      - DATABASE_URL=postgresql://postgres:password123@postgres:5432/odesa_holiday
       - JWT_SECRET=${JWT_SECRET}
       - SENDGRID_API_KEY=${SENDGRID_API_KEY}
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
@@ -19,3 +51,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./emails.log:/app/emails.log
+
+volumes:
+  mongodb_data:
+  postgres_data:
