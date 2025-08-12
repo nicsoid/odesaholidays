@@ -1,7 +1,7 @@
 
 import { MongoClient } from 'mongodb';
-import pkg from 'pg';
-const { Client } = pkg;
+import pg from 'pg';
+const { Client } = pg;
 
 async function checkDatabases() {
   let mongoConnected = false;

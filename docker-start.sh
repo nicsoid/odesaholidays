@@ -7,7 +7,7 @@ echo "🚀 Starting Odesa Holiday Postcards App..."
 # Wait for MongoDB
 echo "⏳ Waiting for MongoDB..."
 until node -e "
-import { MongoClient } from 'mongodb';
+const { MongoClient } = require('mongodb');
 const client = new MongoClient('mongodb://admin:password@mongodb:27017/odesa-holiday?authSource=admin');
 client.connect().then(() => {
   return client.db().admin().ping();
