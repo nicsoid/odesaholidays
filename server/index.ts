@@ -1,11 +1,22 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
 import { connectToDatabase } from "./database";
 
 const app = express();
 app.use(express.json({ limit: '10mb' })); // Increase payload limit for AI-generated stories
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+
+// Simple log function for production
+function log(message: string, source = "express") {
+  const formattedTime = new Date().toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+
+  console.log(`${formattedTime} [${source}] ${message}`);
+}
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -70,8 +81,10 @@ app.use((req, res, next) => {
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
   if (app.get("env") === "development") {
+    const { setupVite, log } = await import("./vite");
     await setupVite(app, server);
   } else {
+    const { serveStatic } = await import("./vite");
     serveStatic(app);
   }
 
