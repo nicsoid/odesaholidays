@@ -11,14 +11,17 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install all dependencies (including dev dependencies for build)
+RUN npm ci
 
 # Copy source code
 COPY . .
 
 # Create dist directory and build the application
 RUN npm run build
+
+# Remove dev dependencies after build to reduce image size
+RUN npm prune --production
 
 # Install MongoDB shell for health checks
 RUN wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | apk add --no-cache gnupg && \
