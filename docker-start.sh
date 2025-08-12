@@ -6,9 +6,21 @@ echo "🚀 Starting Odesa Holiday Postcards App..."
 
 # Wait for MongoDB
 echo "⏳ Waiting for MongoDB..."
-until mongosh --host mongodb:27017 --username admin --password password --authenticationDatabase admin --eval "print('MongoDB is ready')" > /dev/null 2>&1; do
+until node -e "
+const { MongoClient } = require('mongodb');
+const client = new MongoClient('mongodb://admin:password@mongodb:27017/odesa-holiday?authSource=admin');
+client.connect().then(() => {
+  return client.db().admin().ping();
+}).then(() => {
+  console.log('MongoDB is ready');
+  client.close();
+  process.exit(0);
+}).catch(() => {
+  process.exit(1);
+});
+" > /dev/null 2>&1; do
   echo "MongoDB is unavailable - sleeping"
-  sleep 2
+  sleep 3
 done
 echo "✅ MongoDB is ready!"
 
