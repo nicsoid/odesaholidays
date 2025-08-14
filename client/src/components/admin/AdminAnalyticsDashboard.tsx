@@ -11,13 +11,13 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, R
 
 export default function AdminAnalyticsDashboard() {
   // Fetch admin statistics
-  const { data: stats, isLoading: statsLoading } = useQuery({
+  const { data: stats = {}, isLoading: statsLoading } = useQuery({
     queryKey: ['/api/admin/stats'],
     retry: false,
   });
 
   // Fetch monthly analytics
-  const { data: monthlyData, isLoading: monthlyLoading } = useQuery({
+  const { data: monthlyData = [], isLoading: monthlyLoading } = useQuery({
     queryKey: ['/api/admin/analytics/monthly'],
     retry: false,
   });
