@@ -47,10 +47,17 @@ export const templates = pgTable("templates", {
   name: text("name").notNull(),
   description: text("description"),
   imageUrl: text("image_url").notNull(),
+  thumbnailUrl: text("thumbnail_url"),
   category: text("category").notNull(),
+  tags: text("tags"), // JSON array of tags
   isPremium: boolean("is_premium").default(false),
+  isActive: boolean("is_active").default(true),
   usageCount: integer("usage_count").default(0),
+  uploadedBy: integer("uploaded_by").references(() => users.id),
+  fileSize: integer("file_size"), // in bytes
+  dimensions: text("dimensions"), // "width,height"
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const analytics = pgTable("analytics", {
@@ -124,8 +131,12 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
   status: true,
 });
 
-export const insertTemplateSchema = createInsertSchema(templates).omit({
+export const insertTemplateSchema = createInsertSchema(templates).extend({
+  tags: z.string().optional(),
+  dimensions: z.string().optional(),
+}).omit({
   createdAt: true,
+  updatedAt: true,
   usageCount: true,
 });
 
@@ -166,5 +177,54 @@ export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
 export type InsertNewsletterSubscriber = z.infer<typeof insertNewsletterSubscriberSchema>;
 export type TravelStory = typeof travelStories.$inferSelect;
 export type InsertTravelStory = z.infer<typeof insertTravelStorySchema>;
+
+// Admin Analytics Schemas
+export const adminStatsSchema = z.object({
+  totalUsers: z.number(),
+  totalPostcards: z.number(),
+  totalOrders: z.number(),
+  totalStories: z.number(),
+  totalRevenue: z.number(),
+  activeUsers: z.number(),
+  newUsersThisMonth: z.number(),
+  popularTemplates: z.array(z.object({
+    id: z.string(),
+    name: z.string(),
+    usageCount: z.number(),
+    category: z.string(),
+  })),
+  recentActivity: z.array(z.object({
+    type: z.string(),
+    description: z.string(),
+    timestamp: z.string(),
+    userId: z.number().optional(),
+  })),
+  monthlyStats: z.array(z.object({
+    month: z.string(),
+    users: z.number(),
+    postcards: z.number(),
+    orders: z.number(),
+    revenue: z.number(),
+  })),
+});
+
+export const userStatsSchema = z.object({
+  totalPostcards: z.number(),
+  downloadedCards: z.number(),
+  printedCards: z.number(),
+  storiesCreated: z.number(),
+  socialShares: z.number(),
+  totalRevenue: z.number(),
+  memberSince: z.string(),
+  favoriteTemplate: z.string().optional(),
+  recentActivity: z.array(z.object({
+    type: z.string(),
+    description: z.string(),
+    timestamp: z.string(),
+  })),
+});
+
+export type AdminStats = z.infer<typeof adminStatsSchema>;
+export type UserStats = z.infer<typeof userStatsSchema>;
 export type StoryPreferences = typeof storyPreferences.$inferSelect;
 export type InsertStoryPreferences = z.infer<typeof insertStoryPreferencesSchema>;

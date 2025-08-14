@@ -576,35 +576,139 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin template management
-  app.post("/api/admin/templates", authenticateToken, isAdmin, async (req, res) => {
+  // Admin analytics and stats
+  app.get("/api/admin/stats", authenticateToken, isAdmin, async (req: any, res) => {
     try {
-      const templateData = req.body;
-      const template = await storage.createTemplate(templateData);
-      res.json(template);
+      const stats = await mongoStorage.getAdminStats();
+      res.json(stats);
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      res.status(500).json({ message: error.message });
     }
   });
 
-  app.put("/api/admin/templates/:templateId", authenticateToken, isAdmin, async (req, res) => {
+  app.get("/api/admin/analytics/monthly", authenticateToken, isAdmin, async (req: any, res) => {
     try {
-      const { templateId } = req.params;
-      const templateData = req.body;
-      const template = await storage.updateTemplate(templateId, templateData);
+      const { months = 12 } = req.query;
+      const analytics = await mongoStorage.getMonthlyAnalytics(parseInt(months as string));
+      res.json(analytics);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/users", authenticateToken, isAdmin, async (req: any, res) => {
+    try {
+      const { page = 1, limit = 50, search } = req.query;
+      const users = await mongoStorage.getUsers({
+        page: parseInt(page as string),
+        limit: parseInt(limit as string),
+        search: search as string
+      });
+      res.json(users);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Admin template management with file upload support
+  app.post("/api/admin/templates", authenticateToken, isAdmin, async (req: any, res) => {
+    try {
+      const templateData = insertTemplateSchema.parse({
+        ...req.body,
+        uploadedBy: req.user._id
+      });
+      const template = await mongoStorage.createTemplate(templateData);
       res.json(template);
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid template data", errors: error.errors });
+      }
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.put("/api/admin/templates/:templateId", authenticateToken, isAdmin, async (req: any, res) => {
+    try {
+      const { templateId } = req.params;
+      const templateData = insertTemplateSchema.partial().parse(req.body);
+      const template = await mongoStorage.updateTemplate(templateId, templateData);
+      res.json(template);
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid template data", errors: error.errors });
+      }
+      res.status(500).json({ message: error.message });
     }
   });
 
   app.delete("/api/admin/templates/:templateId", authenticateToken, isAdmin, async (req, res) => {
     try {
       const { templateId } = req.params;
-      await storage.deleteTemplate(templateId);
+      await mongoStorage.deleteTemplate(templateId);
       res.json({ message: "Template deleted successfully" });
     } catch (error: any) {
-      res.status(400).json({ message: error.message });
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/admin/templates", authenticateToken, isAdmin, async (req, res) => {
+    try {
+      const { page = 1, limit = 20, category, search } = req.query;
+      const templates = await mongoStorage.getTemplatesAdmin({
+        page: parseInt(page as string),
+        limit: parseInt(limit as string),
+        category: category as string,
+        search: search as string
+      });
+      res.json(templates);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Admin image upload endpoint
+  app.post("/api/admin/upload-image", authenticateToken, isAdmin, async (req: any, res) => {
+    try {
+      const { fileName, fileData, fileSize, mimeType } = req.body;
+      
+      if (!fileName || !fileData) {
+        return res.status(400).json({ message: "Missing file data" });
+      }
+
+      // Extract base64 data
+      const base64Data = fileData.replace(/^data:image\/[a-z]+;base64,/, '');
+      const buffer = Buffer.from(base64Data, 'base64');
+
+      // Generate unique filename
+      const timestamp = Date.now();
+      const cleanFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const uniqueFileName = `${timestamp}_${cleanFileName}`;
+
+      // For now, we'll use a placeholder URL structure
+      // In production, you would upload to cloud storage (AWS S3, Google Cloud, etc.)
+      const imageUrl = `/uploads/templates/${uniqueFileName}`;
+
+      // Save file locally (for demo purposes)
+      const fs = await import('fs');
+      const path = await import('path');
+      
+      const uploadsDir = path.join(process.cwd(), 'uploads', 'templates');
+      if (!fs.existsSync(uploadsDir)) {
+        fs.mkdirSync(uploadsDir, { recursive: true });
+      }
+      
+      const filePath = path.join(uploadsDir, uniqueFileName);
+      fs.writeFileSync(filePath, buffer);
+
+      res.json({
+        imageUrl,
+        fileName: uniqueFileName,
+        size: fileSize,
+        mimeType
+      });
+    } catch (error: any) {
+      console.error('Image upload error:', error);
+      res.status(500).json({ message: "Failed to upload image" });
     }
   });
 

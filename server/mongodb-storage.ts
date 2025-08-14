@@ -30,6 +30,8 @@ export interface IMongoStorage {
   
   // Admin methods
   getAdminStats(): Promise<any>;
+  getMonthlyAnalytics(months: number): Promise<any[]>;
+  getUsers(options: { page: number; limit: number; search?: string }): Promise<{ users: User[]; total: number }>;
   getAllUsers(): Promise<User[]>;
   getUserCount(): Promise<number>;
   getPostcardCount(): Promise<number>;
@@ -38,6 +40,7 @@ export interface IMongoStorage {
   createTemplate(templateData: any): Promise<any>;
   updateTemplate(templateId: string, templateData: any): Promise<any>;
   deleteTemplate(templateId: string): Promise<void>;
+  getTemplatesAdmin(options: { page: number; limit: number; category?: string; search?: string }): Promise<{ templates: Template[]; total: number }>;
 
   // Postcards
   createPostcard(postcard: InsertPostcard): Promise<Postcard>;
@@ -1136,6 +1139,206 @@ export class MongoStorage implements IMongoStorage {
       timeOfYear: preferences.timeOfYear || ''
     });
     return Buffer.from(str).toString('base64').slice(0, 16);
+  }
+
+  // Comprehensive Admin Analytics Methods
+  async getAdminStats(): Promise<any> {
+    try {
+      const totalUsers = await this.users.countDocuments();
+      const totalPostcards = await this.postcards.countDocuments();
+      const totalOrders = await this.orders.countDocuments();
+      const totalStories = await this.travelStories.countDocuments();
+      
+      // Calculate total revenue from orders
+      const revenueResult = await this.orders.aggregate([
+        { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } }
+      ]).toArray();
+      const totalRevenue = revenueResult[0]?.total || 0;
+
+      // Get active users (users who created postcards in last 30 days)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const activeUsers = await this.postcards.distinct('userId', { 
+        createdAt: { $gte: thirtyDaysAgo } 
+      });
+
+      // Get new users this month
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+      const newUsersThisMonth = await this.users.countDocuments({
+        createdAt: { $gte: startOfMonth }
+      });
+
+      // Get popular templates
+      const popularTemplates = await this.templates.find()
+        .sort({ usageCount: -1 })
+        .limit(5)
+        .toArray();
+
+      // Get recent activity
+      const recentPostcards = await this.postcards.find()
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .toArray();
+
+      const recentOrders = await this.orders.find()
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .toArray();
+
+      const recentActivity = [
+        ...recentPostcards.map(p => ({
+          type: 'postcard_created',
+          description: `New postcard: ${p.title}`,
+          timestamp: p.createdAt.toISOString(),
+          userId: p.userId
+        })),
+        ...recentOrders.map(o => ({
+          type: 'order_created',
+          description: `New order: ${o.quantity} postcards`,
+          timestamp: o.createdAt.toISOString(),
+          userId: o.userId
+        }))
+      ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 10);
+
+      return {
+        totalUsers,
+        totalPostcards,
+        totalOrders,
+        totalStories,
+        totalRevenue,
+        activeUsers: activeUsers.length,
+        newUsersThisMonth,
+        popularTemplates: popularTemplates.map(t => ({
+          id: t._id.toString(),
+          name: t.name,
+          usageCount: t.usageCount || 0,
+          category: t.category
+        })),
+        recentActivity
+      };
+    } catch (error) {
+      console.error('Error getting admin stats:', error);
+      throw new Error("Failed to get admin stats");
+    }
+  }
+
+  async getMonthlyAnalytics(months: number = 12): Promise<any[]> {
+    try {
+      const monthlyStats = [];
+      for (let i = 0; i < months; i++) {
+        const monthStart = new Date();
+        monthStart.setMonth(monthStart.getMonth() - i);
+        monthStart.setDate(1);
+        monthStart.setHours(0, 0, 0, 0);
+
+        const monthEnd = new Date(monthStart);
+        monthEnd.setMonth(monthEnd.getMonth() + 1);
+
+        const [users, postcards, orders, revenue] = await Promise.all([
+          this.users.countDocuments({
+            createdAt: { $gte: monthStart, $lt: monthEnd }
+          }),
+          this.postcards.countDocuments({
+            createdAt: { $gte: monthStart, $lt: monthEnd }
+          }),
+          this.orders.countDocuments({
+            createdAt: { $gte: monthStart, $lt: monthEnd }
+          }),
+          this.orders.aggregate([
+            { $match: { createdAt: { $gte: monthStart, $lt: monthEnd } } },
+            { $group: { _id: null, total: { $sum: { $toDouble: "$totalAmount" } } } }
+          ]).toArray()
+        ]);
+
+        monthlyStats.unshift({
+          month: monthStart.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+          users,
+          postcards,
+          orders,
+          revenue: revenue[0]?.total || 0
+        });
+      }
+
+      return monthlyStats;
+    } catch (error) {
+      console.error('Error getting monthly analytics:', error);
+      throw new Error("Failed to get monthly analytics");
+    }
+  }
+
+  async getUsers(options: { page: number; limit: number; search?: string }): Promise<{ users: User[]; total: number }> {
+    try {
+      const { page, limit, search } = options;
+      const skip = (page - 1) * limit;
+
+      let query: any = {};
+      if (search) {
+        query = {
+          $or: [
+            { email: { $regex: search, $options: 'i' } },
+            { firstName: { $regex: search, $options: 'i' } },
+            { lastName: { $regex: search, $options: 'i' } }
+          ]
+        };
+      }
+
+      const [users, total] = await Promise.all([
+        this.users.find(query)
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit)
+          .toArray(),
+        this.users.countDocuments(query)
+      ]);
+
+      return {
+        users: users.map(user => ({ ...user, _id: user._id.toString() })) as User[],
+        total
+      };
+    } catch (error) {
+      console.error('Error getting users:', error);
+      throw new Error("Failed to get users");
+    }
+  }
+
+  async getTemplatesAdmin(options: { page: number; limit: number; category?: string; search?: string }): Promise<{ templates: Template[]; total: number }> {
+    try {
+      const { page, limit, category, search } = options;
+      const skip = (page - 1) * limit;
+
+      let query: any = {};
+      if (category) {
+        query.category = category;
+      }
+      if (search) {
+        query = {
+          ...query,
+          $or: [
+            { name: { $regex: search, $options: 'i' } },
+            { description: { $regex: search, $options: 'i' } }
+          ]
+        };
+      }
+
+      const [templates, total] = await Promise.all([
+        this.templates.find(query)
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit)
+          .toArray(),
+        this.templates.countDocuments(query)
+      ]);
+
+      return {
+        templates: templates.map(template => ({ ...template, _id: template._id.toString() })) as Template[],
+        total
+      };
+    } catch (error) {
+      console.error('Error getting templates:', error);
+      throw new Error("Failed to get templates");
+    }
   }
 }
 

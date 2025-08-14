@@ -5,9 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import UserManagement from "@/components/admin/UserManagement";
 import TemplateManagement from "@/components/admin/TemplateManagement";
+import TemplateUpload from "@/components/admin/TemplateUpload";
+import AdminAnalyticsDashboard from "@/components/admin/AdminAnalyticsDashboard";
 import { useToast } from "@/hooks/use-toast";
 import { 
-  Users, FileImage, BarChart3, 
+  Users, FileImage, BarChart3, Upload,
   Activity, DollarSign, Star, UserPlus, TrendingUp, Shield
 } from "lucide-react";
 
