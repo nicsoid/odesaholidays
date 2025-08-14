@@ -4,3 +4,19 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+node_modules
+dist
+.DS_Store
+server/public
+vite.config.ts.*
+*.tar.gz
+# env files
+.env
+*.env
+*.env.* 
+client/.env
+env.docker
+docker-deployment.md
+
+# optional: keep per‑dev overrides out of git
+docker-compose.override.yml
