@@ -8,6 +8,7 @@ import { Check, Crown, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { useLanguage } from "@/lib/i18n";
 
 if (!import.meta.env.VITE_STRIPE_PUBLIC_KEY) {
   throw new Error('Missing required Stripe key: VITE_STRIPE_PUBLIC_KEY');
@@ -88,6 +89,7 @@ function CheckoutForm({ planId, onSuccess }: { planId: string; onSuccess: () => 
 
 export default function Subscription() {
   const { toast } = useToast();
+  const { t } = useLanguage();
   const queryClient = useQueryClient();
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -96,45 +98,45 @@ export default function Subscription() {
   const newPlans: SubscriptionPlan[] = [
     {
       id: "digital-free",
-      name: "Digital Free",
-      description: "Perfect for digital postcard enthusiasts",
+      name: t('plan.digitalFree'),
+      description: t('home.pricing.free.description'),
       monthlyPrice: 0,
       features: [
-        "Free digital postcards",
-        "5 AI stories per month",
-        "Basic templates",
-        "Standard quality exports"
+        t('plan.features.digitalCards'),
+        `5 ${t('plan.features.aiStories')}`,
+        t('plan.features.templates'),
+        t('plan.features.exports')
       ],
       stripePriceId: ""
     },
     {
       id: "print-ship",
-      name: "Print & Ship",
-      description: "Digital plus physical postcards with AI stories",
+      name: t('plan.printShip'),
+      description: t('home.pricing.print.description'),
       monthlyPrice: 4.99,
       features: [
-        "Unlimited digital postcards",
-        "1 free physical postcard per month",
-        "20 AI stories per month",
-        "No watermarks",
-        "Standard templates",
-        "Shipping costs apply separately"
+        t('plan.features.unlimited'),
+        `1 ${t('plan.features.freeShip')}`,
+        `20 ${t('plan.features.aiStories')}`,
+        t('plan.features.noWatermarks'),
+        t('plan.features.templates'),
+        t('plan.features.shipping')
       ],
       stripePriceId: "price_print_ship_monthly"
     },
     {
       id: "premium-access",
-      name: "Premium Access",
-      description: "Full access with premium features and unlimited AI",
+      name: t('plan.premiumAccess'),
+      description: t('home.pricing.premium.description'),
       monthlyPrice: 9.99,
       features: [
-        "Unlimited digital postcards",
-        "Premium templates included",
-        "200 AI stories per month",
-        "No watermarks",
-        "Priority customer support",
-        "Advanced customization options",
-        "High-resolution exports"
+        t('plan.features.unlimited'),
+        t('plan.features.premium'),
+        `200 ${t('plan.features.aiStories')}`,
+        t('plan.features.noWatermarks'),
+        t('plan.features.support'),
+        t('plan.features.templates'),
+        t('plan.features.exports')
       ],
       stripePriceId: "price_premium_access_monthly"
     }
