@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Edit, Plus, Trash2, Image, Eye } from "lucide-react";
+import { Edit, Plus, Trash2, Image, Eye, Upload, X } from "lucide-react";
 
 interface Template {
   id: string;
@@ -67,9 +67,14 @@ const categories = [
 export default function TemplateManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState<TemplateFormData>({
     id: "",
     name: "",
@@ -162,18 +167,111 @@ export default function TemplateManagement() {
       category: "landmarks",
       isPremium: false,
     });
+    setSelectedFile(null);
+    setPreviewUrl('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (editFileInputRef.current) editFileInputRef.current.value = '';
   };
 
-  const handleCreate = () => {
-    if (!formData.id || !formData.name || !formData.imageUrl) {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, isEdit = false) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
       toast({
-        title: "Error",
+        title: "Invalid File",
+        description: "Please select an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast({
+        title: "File Too Large",
+        description: "Please select an image smaller than 10MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSelectedFile(file);
+    
+    // Create preview URL
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPreviewUrl(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const uploadImageToServer = async (file: File): Promise<string> => {
+    // Convert to base64 for server upload
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        try {
+          const base64 = reader.result as string;
+          const response = await apiRequest('POST', '/api/admin/upload-image', {
+            fileName: file.name,
+            fileData: base64,
+            fileSize: file.size,
+            mimeType: file.type
+          });
+          const data = await response.json();
+          resolve(data.imageUrl);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const clearSelection = () => {
+    setSelectedFile(null);
+    setPreviewUrl('');
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    if (editFileInputRef.current) editFileInputRef.current.value = '';
+  };
+
+  const handleCreate = async () => {
+    if (!formData.name.trim() || !formData.id.trim()) {
+      toast({
+        title: "Validation Error",
         description: "Please fill in all required fields",
         variant: "destructive",
       });
       return;
     }
-    createMutation.mutate(formData);
+
+    if (!selectedFile) {
+      toast({
+        title: "No Image Selected",
+        description: "Please select an image file to upload",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      const imageUrl = await uploadImageToServer(selectedFile);
+      const templateData = { ...formData, imageUrl };
+      createMutation.mutate(templateData);
+    } catch (error: any) {
+      toast({
+        title: "Upload Failed",
+        description: error.message || "Failed to upload image",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleEdit = (template: Template) => {
@@ -186,12 +284,43 @@ export default function TemplateManagement() {
       category: template.category,
       isPremium: template.isPremium,
     });
+    setPreviewUrl(template.imageUrl);
+    setSelectedFile(null);
     setIsEditDialogOpen(true);
   };
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     if (!selectedTemplate) return;
-    updateMutation.mutate({ templateId: selectedTemplate.id, data: formData });
+    
+    if (!formData.name.trim()) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsUploading(true);
+      let imageUrl = formData.imageUrl;
+      
+      // If a new file was selected, upload it
+      if (selectedFile) {
+        imageUrl = await uploadImageToServer(selectedFile);
+      }
+      
+      const templateData = { ...formData, imageUrl };
+      updateMutation.mutate({ templateId: selectedTemplate.id, data: templateData });
+    } catch (error: any) {
+      toast({
+        title: "Upload Failed",
+        description: error.message || "Failed to upload image",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleDelete = (templateId: string) => {
@@ -272,17 +401,56 @@ export default function TemplateManagement() {
                   placeholder="Template description"
                 />
               </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="imageUrl" className="text-right text-blue-900 dark:text-blue-100">
-                  Image URL *
+              <div className="grid grid-cols-4 items-start gap-4">
+                <Label htmlFor="image" className="text-right text-blue-900 dark:text-blue-100 pt-2">
+                  Image *
                 </Label>
-                <Input
-                  id="imageUrl"
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
-                  className="col-span-3 border-blue-200 dark:border-blue-700"
-                  placeholder="https://example.com/image.jpg"
-                />
+                <div className="col-span-3 space-y-3">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileSelect(e, false)}
+                    className="hidden"
+                    id="template-image-input"
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-900/20"
+                    >
+                      <Upload className="h-4 w-4 mr-2" />
+                      Choose Image
+                    </Button>
+                    {selectedFile && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={clearSelection}
+                        className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  {selectedFile && (
+                    <p className="text-sm text-blue-600 dark:text-blue-400">
+                      Selected: {selectedFile.name} ({Math.round(selectedFile.size / 1024)}KB)
+                    </p>
+                  )}
+                  {previewUrl && (
+                    <div className="border border-blue-200 dark:border-blue-700 rounded-lg p-2">
+                      <img 
+                        src={previewUrl} 
+                        alt="Preview" 
+                        className="max-w-full h-32 object-contain rounded"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="category" className="text-right text-blue-900 dark:text-blue-100">
@@ -319,6 +487,7 @@ export default function TemplateManagement() {
                 type="button"
                 variant="outline"
                 onClick={() => setIsCreateDialogOpen(false)}
+                disabled={isUploading || createMutation.isPending}
                 className="border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-900/20"
               >
                 Cancel
@@ -326,10 +495,10 @@ export default function TemplateManagement() {
               <Button
                 type="button"
                 onClick={handleCreate}
-                disabled={createMutation.isPending}
+                disabled={isUploading || createMutation.isPending}
                 className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
               >
-                {createMutation.isPending ? "Creating..." : "Create Template"}
+                {isUploading ? "Uploading..." : createMutation.isPending ? "Creating..." : "Create Template"}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -449,16 +618,68 @@ export default function TemplateManagement() {
                 className="col-span-3 border-blue-200 dark:border-blue-700"
               />
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="edit-imageUrl" className="text-right text-blue-900 dark:text-blue-100">
-                Image URL *
+            <div className="grid grid-cols-4 items-start gap-4">
+              <Label htmlFor="edit-image" className="text-right text-blue-900 dark:text-blue-100 pt-2">
+                Image
               </Label>
-              <Input
-                id="edit-imageUrl"
-                value={formData.imageUrl}
-                onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
-                className="col-span-3 border-blue-200 dark:border-blue-700"
-              />
+              <div className="col-span-3 space-y-3">
+                <input
+                  ref={editFileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileSelect(e, true)}
+                  className="hidden"
+                  id="edit-template-image-input"
+                />
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => editFileInputRef.current?.click()}
+                    className="border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-900/20"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    {selectedFile ? 'Change Image' : 'Upload New Image'}
+                  </Button>
+                  {(selectedFile || previewUrl) && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={clearSelection}
+                      className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-700 dark:text-red-400"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                {selectedFile && (
+                  <p className="text-sm text-blue-600 dark:text-blue-400">
+                    New file: {selectedFile.name} ({Math.round(selectedFile.size / 1024)}KB)
+                  </p>
+                )}
+                {previewUrl && (
+                  <div className="border border-blue-200 dark:border-blue-700 rounded-lg p-2">
+                    <img 
+                      src={previewUrl} 
+                      alt="Preview" 
+                      className="max-w-full h-32 object-contain rounded"
+                    />
+                  </div>
+                )}
+                {!selectedFile && !previewUrl && formData.imageUrl && (
+                  <div className="border border-blue-200 dark:border-blue-700 rounded-lg p-2">
+                    <img 
+                      src={formData.imageUrl} 
+                      alt="Current template" 
+                      className="max-w-full h-32 object-contain rounded"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="edit-category" className="text-right text-blue-900 dark:text-blue-100">
@@ -495,6 +716,7 @@ export default function TemplateManagement() {
               type="button"
               variant="outline"
               onClick={() => setIsEditDialogOpen(false)}
+              disabled={isUploading || updateMutation.isPending}
               className="border-blue-200 text-blue-700 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-300 dark:hover:bg-blue-900/20"
             >
               Cancel
@@ -502,10 +724,10 @@ export default function TemplateManagement() {
             <Button
               type="button"
               onClick={handleUpdate}
-              disabled={updateMutation.isPending}
+              disabled={isUploading || updateMutation.isPending}
               className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
             >
-              {updateMutation.isPending ? "Updating..." : "Update Template"}
+              {isUploading ? "Uploading..." : updateMutation.isPending ? "Updating..." : "Update Template"}
             </Button>
           </DialogFooter>
         </DialogContent>

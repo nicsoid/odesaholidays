@@ -1296,6 +1296,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Serve uploaded images statically
+  const path = await import('path');
+  app.use('/uploads', (await import('express')).static(path.join(process.cwd(), 'uploads')));
+
   const httpServer = createServer(app);
   return httpServer;
 }
