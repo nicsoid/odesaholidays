@@ -5,8 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/useAuth";
 import UserManagement from "@/components/admin/UserManagement";
 import TemplateManagement from "@/components/admin/TemplateManagement";
-import TemplateUpload from "@/components/admin/TemplateUpload";
 import AdminAnalyticsDashboard from "@/components/admin/AdminAnalyticsDashboard";
+import TemplateUpload from "@/components/admin/TemplateUpload";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Users, FileImage, BarChart3, Upload,
@@ -196,18 +196,9 @@ export default function Admin() {
 
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="mt-6">
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-              <CardHeader>
-                <CardTitle className="text-white">Analytics Dashboard</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center py-12">
-                  <Activity className="h-16 w-16 text-yellow-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-white mb-2">Analytics Coming Soon</h3>
-                  <p className="text-blue-100">Detailed analytics and insights will be available here.</p>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+              <AdminAnalyticsDashboard />
+            </div>
           </TabsContent>
         </Tabs>
       </div>

@@ -23,7 +23,7 @@ import Navigation from "@/components/navigation";
 
 function Router() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <Navigation />
       <Switch>
         <Route path="/" component={Home} />

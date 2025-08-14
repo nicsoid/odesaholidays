@@ -68,7 +68,7 @@ export default function AdminAnalyticsDashboard() {
               </div>
               <Users className="h-12 w-12 text-blue-200" />
             </div>
-          </div>
+          </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-yellow-500 to-yellow-600 text-white">
@@ -83,7 +83,7 @@ export default function AdminAnalyticsDashboard() {
               </div>
               <FileImage className="h-12 w-12 text-yellow-200" />
             </div>
-          </div>
+          </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-green-600 to-green-700 text-white">
@@ -96,7 +96,7 @@ export default function AdminAnalyticsDashboard() {
               </div>
               <ShoppingCart className="h-12 w-12 text-green-200" />
             </div>
-          </div>
+          </CardContent>
         </Card>
 
         <Card className="bg-gradient-to-br from-purple-600 to-purple-700 text-white">
@@ -109,7 +109,7 @@ export default function AdminAnalyticsDashboard() {
               </div>
               <DollarSign className="h-12 w-12 text-purple-200" />
             </div>
-          </div>
+          </CardContent>
         </Card>
       </div>
 

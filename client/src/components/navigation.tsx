@@ -139,44 +139,53 @@ export default function Navigation() {
                 </Link>
               )}
               
+              {/* Language Switcher */}
+              <div className="px-3 py-2">
+                <LanguageSwitcher />
+              </div>
+              
               {isAuthenticated ? (
-                <div className="px-3 py-2 space-y-2">
+                <div className="px-3 py-2 space-y-3">
                   <div className="flex items-center space-x-2 text-sm text-gray-600">
                     <User className="h-4 w-4" />
                     <span>{user?.email}</span>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={logout}
-                    className="w-full text-gray-600 hover:text-red-600"
-                  >
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Logout
-                  </Button>
-                  <Link href="/story-creator">
-                    <Button variant="outline" className="w-full border-ukrainian-blue text-ukrainian-blue hover:bg-ukrainian-blue hover:text-white">
-                      AI Stories
+                  <div className="space-y-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={logout}
+                      className="w-full text-gray-600 hover:text-red-600"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" />
+                      {t('nav.logout')}
                     </Button>
-                  </Link>
-                  <Link href="/creator">
-                    <Button className="w-full bg-ukrainian-blue hover:bg-blue-700">
-                      Start Creating
-                    </Button>
-                  </Link>
+                    <Link href="/story-creator">
+                      <Button variant="outline" className="w-full border-ukrainian-blue text-ukrainian-blue hover:bg-ukrainian-blue hover:text-white">
+                        AI Stories
+                      </Button>
+                    </Link>
+                    <Link href="/creator">
+                      <Button className="w-full bg-ukrainian-blue hover:bg-blue-700">
+                        {t('nav.creator')}
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               ) : (
-                <div className="px-3 py-2 space-y-2">
-                  <Link href="/login">
-                    <Button variant="outline" size="sm" className="w-full">
-                      Sign In
-                    </Button>
-                  </Link>
-                  <Link href="/register">
-                    <Button className="w-full bg-ukrainian-blue hover:bg-blue-700">
-                      Sign Up
-                    </Button>
-                  </Link>
+                <div className="px-3 py-2 space-y-3">
+                  <div className="space-y-2">
+                    <Link href="/login">
+                      <Button variant="outline" size="sm" className="w-full">
+                        {t('nav.login')}
+                      </Button>
+                    </Link>
+                    <Link href="/register">
+                      <Button className="w-full bg-ukrainian-blue hover:bg-blue-700">
+                        {t('nav.register')}
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>
